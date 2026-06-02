@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoBot Lab — Blog de Robótica Colaborativa · Industria 5.0</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#0a0c10;--bg2:#0f1218;--bg3:#161b24;--border:rgba(255,255,255,0.07);
+    --text:#e8eaf0;--text-muted:#7a8195;--accent:#00d4ff;--accent2:#7c3aed;
+    --accent3:#10b981;--accent-warm:#f59e0b;--sidebar-w:280px;--progress-h:3px;
+    --radius:12px;--shadow:0 8px 40px rgba(0,0,0,0.5);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:16px;line-height:1.7;overflow-x:hidden}
+  #progress-bar{position:fixed;top:0;left:0;height:var(--progress-h);width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:9999;transition:width 0.1s linear}
+  /* SIDEBAR */
+  #sidebar{position:fixed;left:0;top:0;width:var(--sidebar-w);height:100vh;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;z-index:100;display:flex;flex-direction:column;padding:0 0 2rem;transition:transform 0.3s ease}
+  .sidebar-logo{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg2);z-index:2}
+  .sidebar-logo .brand{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--accent);letter-spacing:-0.02em}
+  .sidebar-logo .brand span{color:var(--text-muted);font-style:italic}
+  .sidebar-logo .tagline{font-size:0.7rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;margin-top:0.25rem}
+  .nav-section{padding:1rem 1rem 0.5rem 1.5rem;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);font-weight:600}
+  .nav-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.55rem 1rem 0.55rem 1.5rem;text-decoration:none;color:var(--text-muted);font-size:0.82rem;font-weight:400;border-left:2px solid transparent;transition:all 0.2s;cursor:pointer;line-height:1.4}
+  .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+  .nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,212,255,0.05)}
+  .nav-num{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--accent2);min-width:20px;padding-top:1px}
+  /* MAIN */
+  #main{margin-left:var(--sidebar-w);min-height:100vh;padding-bottom:6rem}
+  /* VIEWS */
+  .view{display:none}
+  .view.active{display:block}
+  /* HERO */
+  #hero{position:relative;padding:5rem 4rem 4rem;background:var(--bg);overflow:hidden;border-bottom:1px solid var(--border)}
+  .hero-grid{position:absolute;inset:0;opacity:0.04;background-image:linear-gradient(var(--accent) 1px,transparent 1px),linear-gradient(90deg,var(--accent) 1px,transparent 1px);background-size:40px 40px}
+  .hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,0.08) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none}
+  .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);color:var(--accent);font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.35rem 0.8rem;border-radius:100px;margin-bottom:1.5rem}
+  .hero-title{font-family:'DM Serif Display',serif;font-size:clamp(2.5rem,5vw,4rem);line-height:1.1;letter-spacing:-0.03em;max-width:700px;margin-bottom:1.25rem}
+  .hero-title em{color:var(--accent);font-style:italic}
+  .hero-sub{color:var(--text-muted);font-size:1rem;max-width:560px;margin-bottom:2.5rem}
+  .hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap}
+  .stat{display:flex;flex-direction:column;gap:0.2rem}
+  .stat-val{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:500;color:var(--accent)}
+  .stat-label{font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em}
+  /* ABOUT SECTION (homepage) */
+  .about-section{padding:3rem 4rem;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+  .about-block h2{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:1rem;color:var(--text)}
+  .about-block p{color:#c5c9d6;font-size:0.93rem;margin-bottom:0.9rem}
+  .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:1rem}
+  .team-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center;transition:border-color 0.2s,transform 0.2s}
+  .team-card:hover{border-color:rgba(0,212,255,0.3);transform:translateY(-2px)}
+  .team-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));margin:0 auto 0.7rem;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;color:#fff}
+  .team-name{font-weight:600;font-size:0.85rem;color:var(--text);margin-bottom:0.25rem}
+  .team-role{font-size:0.72rem;color:var(--text-muted)}
+  .obj-list{list-style:none;margin-top:0.5rem}
+  .obj-list li{display:flex;gap:0.7rem;align-items:flex-start;padding:0.5rem 0;border-bottom:1px solid var(--border);font-size:0.88rem;color:#c5c9d6}
+  .obj-list li:last-child{border-bottom:none}
+  .obj-list li::before{content:'→';color:var(--accent);flex-shrink:0;margin-top:2px}
+  /* BLOG INDEX */
+  .blog-index{padding:3rem 4rem}
+  .blog-index-title{font-family:'DM Serif Display',serif;font-size:1.8rem;margin-bottom:0.5rem;color:var(--text)}
+  .blog-index-sub{color:var(--text-muted);font-size:0.88rem;margin-bottom:2rem}
+  .block-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);font-weight:700;padding:1.5rem 0 0.75rem;border-top:1px solid var(--border);margin-top:1rem}
+  .block-label:first-of-type{border-top:none;padding-top:0;margin-top:0}
+  .entry-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-bottom:0.5rem}
+  .entry-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;cursor:pointer;transition:border-color 0.2s,transform 0.2s;text-decoration:none;display:block;position:relative;overflow:hidden}
+  .entry-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity 0.2s}
+  .entry-card:hover{border-color:rgba(0,212,255,0.25);transform:translateY(-3px)}
+  .entry-card:hover::before{opacity:1}
+  .ec-num{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--accent2);margin-bottom:0.5rem}
+  .ec-tag{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent3);font-weight:600;margin-bottom:0.4rem}
+  .ec-title{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--text);line-height:1.25;margin-bottom:0.6rem}
+  .ec-excerpt{font-size:0.8rem;color:var(--text-muted);line-height:1.5;margin-bottom:0.8rem}
+  .ec-meta{display:flex;align-items:center;gap:0.75rem;font-size:0.72rem;color:var(--text-muted)}
+  .ec-date{font-family:'JetBrains Mono',monospace;font-size:0.68rem}
+  .ec-author{color:var(--accent3)}
+  .ec-read{color:var(--accent);font-weight:600;font-size:0.75rem;display:flex;align-items:center;gap:0.3rem}
+  /* ENTRY PAGE */
+  .entry{padding:4rem 4rem;border-bottom:1px solid var(--border);opacity:0;transform:translateY(20px);transition:opacity 0.5s ease,transform 0.5s ease;position:relative}
+  .entry.visible{opacity:1;transform:translateY(0)}
+  .back-btn{display:inline-flex;align-items:center;gap:0.5rem;color:var(--text-muted);font-size:0.8rem;cursor:pointer;margin-bottom:2rem;padding:0.4rem 0.8rem;border:1px solid var(--border);border-radius:6px;background:transparent;transition:all 0.2s}
+  .back-btn:hover{color:var(--accent);border-color:var(--accent)}
+  .entry-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:1.5rem}
+  .entry-num{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--accent2);background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);padding:0.3rem 0.6rem;border-radius:6px;white-space:nowrap;margin-top:0.35rem}
+  .entry-title-group{}
+  .entry-tag{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent3);margin-bottom:0.4rem;font-weight:600}
+  .entry-title{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.15;letter-spacing:-0.02em;color:var(--text)}
+  .entry-byline{display:flex;gap:1.25rem;align-items:center;flex-wrap:wrap;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+  .byline-item{font-size:0.78rem;color:var(--text-muted);display:flex;align-items:center;gap:0.35rem}
+  .byline-item strong{color:var(--accent3)}
+  .entry-body{max-width:760px}
+  .entry-body p{color:#c5c9d6;margin-bottom:1.25rem;font-size:0.97rem}
+  .entry-body h3{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--text);margin:2rem 0 0.75rem;letter-spacing:-0.01em}
+  .entry-body h4{font-size:0.9rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:1.75rem 0 0.6rem}
+  /* CARDS */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin:1.5rem 0}
+  .card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;transition:border-color 0.2s,transform 0.2s}
+  .card:hover{border-color:rgba(0,212,255,0.25);transform:translateY(-2px)}
+  .card-icon{font-size:1.6rem;margin-bottom:0.6rem}
+  .card-title{font-weight:600;font-size:0.9rem;color:var(--text);margin-bottom:0.4rem}
+  .card-desc{font-size:0.8rem;color:var(--text-muted);line-height:1.5}
+  /* CALLOUT */
+  .callout{border-left:3px solid var(--accent);background:rgba(0,212,255,0.04);border-radius:0 var(--radius) var(--radius) 0;padding:1rem 1.25rem;margin:1.5rem 0}
+  .callout.warning{border-left-color:var(--accent-warm);background:rgba(245,158,11,0.04)}
+  .callout.success{border-left-color:var(--accent3);background:rgba(16,185,129,0.04)}
+  .callout.purple{border-left-color:var(--accent2);background:rgba(124,58,237,0.04)}
+  .callout-label{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);margin-bottom:0.4rem}
+  .callout.warning .callout-label{color:var(--accent-warm)}
+  .callout.success .callout-label{color:var(--accent3)}
+  .callout.purple .callout-label{color:var(--accent2)}
+  .callout p{color:#c5c9d6;font-size:0.9rem;margin:0}
+  /* QUOTE */
+  .quote-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 1.75rem;margin:1.5rem 0;position:relative}
+  .quote-block::before{content:'"';font-family:'DM Serif Display',serif;font-size:4rem;color:var(--accent2);opacity:0.3;position:absolute;top:-0.5rem;left:1rem;line-height:1}
+  .quote-block p{font-style:italic;color:var(--text);font-size:0.95rem;padding-left:1rem;margin:0 0 0.75rem}
+  .quote-author{font-size:0.78rem;color:var(--accent);font-weight:600;padding-left:1rem}
+  /* TABLE */
+  .table-wrap{overflow-x:auto;margin:1.5rem 0;border-radius:var(--radius);border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse;font-size:0.85rem}
+  thead{background:var(--bg3)}
+  th{padding:0.9rem 1.1rem;text-align:left;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border)}
+  td{padding:0.85rem 1.1rem;border-bottom:1px solid var(--border);color:#c5c9d6;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(255,255,255,0.015)}
+  td:first-child{font-weight:600;color:var(--text)}
+  .td-good{color:var(--accent3)}
+  .td-warn{color:var(--accent-warm)}
+  /* COBOT DIAGRAM */
+  .cobot-diagram{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;margin:1.5rem 0}
+  .diagram-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);margin-bottom:1.5rem}
+  .cobot-body{display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap}
+  .cobot-svg{flex:0 0 160px}
+  .cobot-features{flex:1;min-width:200px}
+  .feature-row{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0;border-bottom:1px solid var(--border);font-size:0.84rem}
+  .feature-row:last-child{border-bottom:none}
+  .feature-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  /* TIMELINE */
+  .timeline{margin:1.5rem 0;position:relative;padding-left:2rem}
+  .timeline::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent2));border-radius:2px}
+  .timeline-item{position:relative;margin-bottom:1.5rem}
+  .timeline-item::before{content:'';position:absolute;left:-1.68rem;top:0.35rem;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--bg)}
+  .timeline-item h4{margin:0 0 0.25rem;font-size:0.9rem;font-weight:600;color:var(--text);text-transform:none;letter-spacing:0}
+  .timeline-item p{font-size:0.82rem;color:var(--text-muted);margin:0}
+  /* MODES */
+  .modes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin:1.5rem 0}
+  .mode-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;border-top:3px solid transparent;transition:transform 0.2s}
+  .mode-card:hover{transform:translateY(-3px)}
+  .mode-card.m1{border-top-color:#ef4444}.mode-card.m2{border-top-color:#f59e0b}.mode-card.m3{border-top-color:var(--accent)}.mode-card.m4{border-top-color:var(--accent3)}
+  .mode-icon{font-size:1.5rem;margin-bottom:0.5rem}
+  .mode-name{font-weight:600;font-size:0.88rem;margin-bottom:0.4rem}
+  .mode-desc{font-size:0.78rem;color:var(--text-muted);line-height:1.4}
+  /* CASE STUDY */
+  .case-study{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:1.5rem 0}
+  .case-header{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(0,212,255,0.08));border-bottom:1px solid var(--border);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem}
+  .case-logo{width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+  .case-company{font-weight:700;font-size:1rem;color:var(--text)}
+  .case-subtitle{font-size:0.78rem;color:var(--text-muted)}
+  .case-body{padding:1.5rem}
+  .case-metrics{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+  .metric{display:flex;flex-direction:column}
+  .metric-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:500;color:var(--accent3)}
+  .metric-label{font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em}
+  /* PILLS */
+  .pill{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:100px;padding:0.3rem 0.75rem;font-size:0.78rem;color:var(--text-muted);margin:0.25rem;transition:all 0.2s}
+  .pill:hover{border-color:var(--accent);color:var(--accent)}
+  /* BIO */
+  .bio-zone{display:flex;align-items:center;gap:0.5rem}
+  .bio-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  /* COMPARE */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden;margin:1.5rem 0}
+  .compare-col{background:var(--bg3);padding:1.5rem}
+  .compare-col h4{text-align:center;font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding-bottom:0.75rem;margin-bottom:1rem;border-bottom:1px solid var(--border);color:var(--text);background:none;margin-top:0}
+  .compare-col.robot h4{color:#ef4444}
+  .compare-col.cobot h4{color:var(--accent3)}
+  .compare-item{display:flex;gap:0.6rem;font-size:0.82rem;margin-bottom:0.6rem;align-items:flex-start}
+  .compare-item .ci{flex-shrink:0}
+  /* BACK TO TOP */
+  #back-top{position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;background:var(--bg3);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-size:1.1rem;opacity:0;transform:translateY(10px);transition:all 0.3s;z-index:200}
+  #back-top.show{opacity:1;transform:translateY(0)}
+  #back-top:hover{color:var(--accent);border-color:var(--accent)}
+  /* HAMBURGER */
+  #menu-toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:300;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.65rem;cursor:pointer;color:var(--text);font-size:1rem}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:90}
+  /* FOOTER */
+  footer{padding:2.5rem 4rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:0.8rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+  /* ROI */
+  .roi-bar-wrap{margin:1.5rem 0}
+  .roi-bar-item{display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;font-size:0.84rem}
+  .roi-label{min-width:160px;color:var(--text-muted)}
+  .roi-bar{height:8px;border-radius:4px;background:rgba(255,255,255,0.05);flex:1;position:relative;overflow:hidden}
+  .roi-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent3),var(--accent));transition:width 1s ease;width:0}
+  .roi-val{min-width:60px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--accent3)}
+  /* PERSONAL NOTE */
+  .personal-note{background:linear-gradient(135deg,rgba(124,58,237,0.06),rgba(0,212,255,0.04));border:1px solid rgba(124,58,237,0.15);border-radius:var(--radius);padding:1.5rem 1.75rem;margin:1.5rem 0;position:relative}
+  .personal-note::before{content:'✍️';position:absolute;top:-0.8rem;left:1.25rem;font-size:1.2rem;background:var(--bg);padding:0 0.3rem}
+  .personal-note p{color:#c5c9d6;font-size:0.91rem;font-style:italic;margin:0}
+  /* HIGHLIGHT */
+  .highlight{color:var(--accent);font-weight:600}
+  .highlight2{color:var(--accent3);font-weight:600}
+  .highlight3{color:var(--accent-warm);font-weight:600}
+  code{font-family:'JetBrains Mono',monospace;font-size:0.82rem;background:rgba(255,255,255,0.06);padding:0.1em 0.4em;border-radius:4px;color:var(--accent)}
+  /* ENTRY IMAGE */
+  .entry-img{width:100%;max-height:320px;object-fit:cover;border-radius:var(--radius);margin:1.5rem 0;border:1px solid var(--border)}
+  .img-caption{font-size:0.75rem;color:var(--text-muted);text-align:center;margin-top:-0.75rem;margin-bottom:1.5rem}
+  /* RESPONSIVE */
+  @media(max-width:900px){
+    #menu-toggle{display:flex}
+    #sidebar{transform:translateX(-100%)}
+    #sidebar.open{transform:translateX(0)}
+    .sidebar-overlay.open{display:block}
+    #main{margin-left:0}
+    .entry,.blog-index,#hero,.about-section{padding:2.5rem 1.5rem}
+    .hero-stats{gap:1.5rem}
+    .compare{grid-template-columns:1fr}
+    .about-section{grid-template-columns:1fr}
+    footer{padding:2rem 1.5rem}
+  }
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2)}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">CoBot<span>Lab</span></div>
+    <div class="tagline">Robótica Colaborativa · Blog Universitario</div>
+  </div>
+  <div class="nav-section">Blog</div>
+  <a class="nav-item active" onclick="showHome()">
+    <span class="nav-num">🏠</span>Portada &amp; Entradas
+  </a>
+  <a class="nav-item" onclick="showEntry('e1')">
+    <span class="nav-num">01</span>Presentación del grupo
+  </a>
+  <div class="nav-section">Bloque II · Técnico</div>
+  <a class="nav-item" onclick="showEntry('e2')">
+    <span class="nav-num">02</span>Seguridad e ISO/TS 15066
+  </a>
+  <a class="nav-item" onclick="showEntry('e3')">
+    <span class="nav-num">03</span>Programación, HMI y Gemelos Digitales
+  </a>
+  <a class="nav-item" onclick="showEntry('e4')">
+    <span class="nav-num">04</span>EOAT y Robótica Blanda
+  </a>
+  <div class="nav-section">Bloque III · Divulgativo</div>
+  <a class="nav-item" onclick="showEntry('e5')">
+    <span class="nav-num">05</span>Cobot vs Robot Industrial
+  </a>
+  <a class="nav-item" onclick="showEntry('e6')">
+    <span class="nav-num">06</span>Cobots en Medicina
+  </a>
+  <a class="nav-item" onclick="showEntry('e7')">
+    <span class="nav-num">07</span>Agricultura de Precisión
+  </a>
+  <div class="nav-section">Bloque IV · Casos Reales</div>
+  <a class="nav-item" onclick="showEntry('e8')">
+    <span class="nav-num">08</span>Mercedes-Benz
+  </a>
+  <a class="nav-item" onclick="showEntry('e9')">
+    <span class="nav-num">09</span>Carl Zeiss &amp; MANN+HUMMEL
+  </a>
+  <a class="nav-item" onclick="showEntry('e10')">
+    <span class="nav-num">10</span>Casos en España: COVAP &amp; Reina Sofía
+  </a>
+  <div class="nav-section">Bloque V · Cierre</div>
+  <a class="nav-item" onclick="showEntry('e11')">
+    <span class="nav-num">11</span>El Futuro de la Colaboración H-R
+  </a>
+</aside>
+
+<div class="sidebar-overlay" id="overlay"></div>
+<button id="menu-toggle" onclick="toggleMenu()">☰</button>
+
+<main id="main">
+
+<!-- ===================== VIEW: HOME ===================== -->
+<div id="view-home" class="view active">
+
+  <section id="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-badge"><span>◉</span> Blog Universitario · Asignatura: Robótica</div>
+    <h1 class="hero-title">Bienvenidos a <em>CoBot Lab</em></h1>
+    <p class="hero-sub">Somos tres estudiantes de Ingeniería y este es nuestro blog sobre robótica colaborativa e Industria 5.0. Aquí encontrarás desde fundamentos técnicos hasta casos reales de empresas que ya han dado el salto.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-val">11</span><span class="stat-label">Entradas</span></div>
+      <div class="stat"><span class="stat-val">5</span><span class="stat-label">Bloques</span></div>
+      <div class="stat"><span class="stat-val">3</span><span class="stat-label">Autores</span></div>
+      <div class="stat"><span class="stat-val">2025</span><span class="stat-label">Publicación</span></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-section" style="opacity:0;transform:translateY(20px);transition:all 0.5s 0.1s" id="about-sec">
+    <div class="about-block">
+      <h2>Sobre nosotros</h2>
+      <p>Somos José Antonio, Rafael y Miguel, estudiantes del Grado en Ingeniería y este blog es el resultado de nuestra práctica para la asignatura de Robótica. Hemos elegido la robótica colaborativa porque creemos que es una de las tecnologías que más va a cambiar nuestra vida profesional en los próximos años.</p>
+      <p>Intentamos combinar rigor técnico con un lenguaje accesible para que cualquier persona, sea ingeniera o no, pueda entender de qué va esto de los cobots.</p>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">JA</div>
+          <div class="team-name">José Antonio López Vinós</div>
+          <div class="team-role">Sistemas Automatizados</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">RG</div>
+          <div class="team-name">Rafael Gallo Arjonilla</div>
+          <div class="team-role">Robótica &amp; Control</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">MG</div>
+          <div class="team-name">Miguel García Gómez</div>
+          <div class="team-role">Automatización Industrial</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-block">
+      <h2>Objetivos del blog</h2>
+      <p>Este blog pretende ser un espacio de divulgación tecnológica que permita entender cómo la colaboración entre personas y robots está transformando la industria actual.</p>
+      <ul class="obj-list">
+        <li>Explicar qué es la robótica colaborativa y qué la diferencia de la automatización tradicional</li>
+        <li>Analizar la normativa de seguridad (ISO/TS 15066) de forma accesible</li>
+        <li>Mostrar casos reales de empresas que ya usan cobots</li>
+        <li>Divulgar aplicaciones emergentes: medicina, agricultura, servicios</li>
+        <li>Reflexionar sobre el impacto social y económico de estas tecnologías</li>
+        <li>Demostrar que la Industria 5.0 pone al ser humano en el centro</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- BLOG INDEX -->
+  <section class="blog-index" style="opacity:0;transform:translateY(20px);transition:all 0.5s 0.2s" id="index-sec">
+    <div class="blog-index-title">Todas las entradas</div>
+    <div class="blog-index-sub">Haz clic en cualquier entrada para leerla completa</div>
+
+    <div class="block-label">Bloque I — Presentación del grupo</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e1')">
+        <div class="ec-num">Entrada 01</div>
+        <div class="ec-tag">Presentación</div>
+        <div class="ec-title">Bienvenidos a nuestro blog sobre Robótica Colaborativa e Industria 5.0</div>
+        <div class="ec-excerpt">Quiénes somos, por qué elegimos este tema y qué encontrarás en este blog a lo largo de las próximas semanas.</div>
+        <div class="ec-meta">
+          <span class="ec-date">03/03/2025</span>
+          <span class="ec-author">José Antonio, Rafael &amp; Miguel</span>
+          <span class="ec-read">Leer →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-label">Bloque II — Entradas Técnicas</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e2')">
+        <div class="ec-num">Entrada 02</div>
+        <div class="ec-tag">Técnico · Normativa</div>
+        <div class="ec-title">Seguridad en robots colaborativos e ISO/TS 15066</div>
+        <div class="ec-excerpt">Límites biomecánicos, modos de colaboración y la norma que hace posible trabajar codo a codo con un robot.</div>
+        <div class="ec-meta"><span class="ec-date">10/03/2025</span><span class="ec-author">José Antonio López Vinós</span><span class="ec-read">Leer →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e3')">
+        <div class="ec-num">Entrada 03</div>
+        <div class="ec-tag">Técnico · Programación</div>
+        <div class="ec-title">Programación por demostración, HMI y Gemelos Digitales</div>
+        <div class="ec-excerpt">Lead-through, realidad extendida, robotic puppeteering y la simulación virtual antes de tocar el robot real.</div>
+        <div class="ec-meta"><span class="ec-date">17/03/2025</span><span class="ec-author">Rafael Gallo Arjonilla</span><span class="ec-read">Leer →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e4')">
+        <div class="ec-num">Entrada 04</div>
+        <div class="ec-tag">Técnico · Herramientas</div>
+        <div class="ec-title">Herramientas de extremo (EOAT) y robótica blanda</div>
+        <div class="ec-excerpt">Grippers adaptativos, soft robotics y por qué la mano del robot importa tanto como el brazo.</div>
+        <div class="ec-meta"><span class="ec-date">24/03/2025</span><span class="ec-author">Miguel García Gómez</span><span class="ec-read">Leer →</span></div>
+      </div>
+    </div>
+
+    <div class="block-label">Bloque III — Entradas Divulgativas</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e5')">
+        <div class="ec-num">Entrada 05</div>
+        <div class="ec-tag">Divulgativo</div>
+        <div class="ec-title">¿Qué diferencia a un cobot de un robot industrial tradicional?</div>
+        <div class="ec-excerpt">Sin tecnicismos: por qué un cobot se parece más a un compañero de trabajo que a una máquina de una película de ciencia ficción.</div>
+        <div class="ec-meta"><span class="ec-date">31/03/2025</span><span class="ec-author">José Antonio, Rafael &amp; Miguel</span><span class="ec-read">Leer →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e6')">
+        <div class="ec-num">Entrada 06</div>
+        <div class="ec-tag">Divulgativo · Salud</div>
+        <div class="ec-title">Cobots en medicina y rehabilitación</div>
+        <div class="ec-excerpt">De los quirófanos a las salas de fisioterapia: cómo los robots colaborativos están mejorando la vida de pacientes y sanitarios.</div>
+        <div class="ec-meta"><span class="ec-date">07/04/2025</span><span class="ec-author">Rafael Gallo Arjonilla</span><span class="ec-read">Leer →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e7')">
+        <div class="ec-num">Entrada 07</div>
+        <div class="ec-tag">Divulgativo · Agricultura</div>
+        <div class="ec-title">Agricultura de precisión y nuevas aplicaciones colaborativas</div>
+        <div class="ec-excerpt">Recolección de tomates, poda selectiva y garras blandas: la robótica que cuida lo que no puede romperse.</div>
+        <div class="ec-meta"><span class="ec-date">14/04/2025</span><span class="ec-author">Miguel García Gómez</span><span class="ec-read">Leer →</span></div>
+      </div>
+    </div>
+
+    <div class="block-label">Bloque IV — Casos Reales y Aplicaciones</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e8')">
+        <div class="ec-num">Entrada 08</div>
+        <div class="ec-tag">Caso Real · Automoción</div>
+        <div class="ec-title">Cobots en la industria automotriz: el caso Mercedes-Benz</div>
+        <div class="ec-excerpt">Cómo un UR10e mejoró la calidad del sellado y la ergonomía de los operarios en la planta de Brasil sin necesidad de ninguna barrera de seguridad.</div>
+        <div class="ec-meta"><span class="ec-date">28/04/2025</span><span class="ec-author">José Antonio López Vinós</span><span class="ec-read">Leer →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e9')">
+        <div class="ec-num">Entrada 09</div>
+        <div class="ec-tag">Caso Real · Fabricación</div>
+        <div class="ec-title">Fabricación flexible: Carl Zeiss y MANN+HUMMEL</div>
+        <div class="ec-excerpt">De 50% a 90% de utilización de máquinas y un cobot que trabaja 24/7. Dos historias reales de transformación industrial.</div>
+        <div class="ec-meta"><span class="ec-date">05/05/2025</span><span class="ec-author">Rafael Gallo Arjonilla</span><span class="ec-read">Leer →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e10')">
+        <div class="ec-num">Entrada 10</div>
+        <div class="ec-tag">Caso Real · España</div>
+        <div class="ec-title">Casos reales en España: COVAP y el Hospital Reina Sofía</div>
+        <div class="ec-excerpt">Dos ejemplos de Córdoba que demuestran que la robótica colaborativa ya es una realidad en nuestro país, tanto en la industria como en la sanidad.</div>
+        <div class="ec-meta"><span class="ec-date">12/05/2025</span><span class="ec-author">José Antonio, Rafael &amp; Miguel</span><span class="ec-read">Leer →</span></div>
+      </div>
+    </div>
+
+    <div class="block-label">Bloque V — Cierre Colectivo</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e11')">
+        <div class="ec-num">Entrada 11</div>
+        <div class="ec-tag">Reflexión · Cierre</div>
+        <div class="ec-title">Reflexiones sobre el futuro de la colaboración humano-robot</div>
+        <div class="ec-excerpt">Cerramos el blog con nuestras conclusiones, aprendizajes del proyecto y una reflexión sobre qué significa una industria verdaderamente centrada en las personas.</div>
+        <div class="ec-meta"><span class="ec-date">19/05/2025</span><span class="ec-author">José Antonio, Rafael &amp; Miguel</span><span class="ec-read">Leer →</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div><strong style="color:var(--text)">CoBot<span style="color:var(--accent)">Lab</span></strong> — Blog universitario sobre Robótica Colaborativa e Industria 5.0<br><span style="color:var(--text-muted)">José Antonio López Vinós · Rafael Gallo Arjonilla · Miguel García Gómez · Asignatura: Robótica</span></div>
+    <div style="text-align:right;color:var(--text-muted)">Basado en ISO/TS 15066 · ISO 10218 · Universal Robots · IFR 2025<br>HTML · CSS · JavaScript — sin frameworks externos</div>
+  </footer>
+</div><!-- /view-home -->
+
+<!-- ===================== VIEW: SINGLE ENTRY ===================== -->
+<div id="view-entry" class="view">
+  <div id="entry-content"></div>
+</div>
+
+</main>
+
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba">↑</button>
+
+<!-- ENTRY TEMPLATES (hidden) -->
+<template id="tpl-e1">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 01 · Bloque I</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Presentación del grupo</div>
+        <h2 class="entry-title">Bienvenidos a nuestro blog sobre Robótica Colaborativa e Industria 5.0</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>3 de marzo de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio López Vinós, Rafael Gallo Arjonilla y Miguel García Gómez</strong></span>
+      <span class="byline-item">⏱️ 4 min de lectura</span>
+      <span class="byline-item">📌 Asignatura: Robótica</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <div class="personal-note"><p>Esta es nuestra primera entrada. Más que una publicación técnica, es una presentación: quiénes somos, por qué hemos elegido este tema y qué esperamos que te lleves tú, lector, cuando termines de leer este blog.</p></div>
+
+    <h3>Hola, somos CoBot Lab</h3>
+    <p>Somos José Antonio, Rafael y Miguel, tres estudiantes de Ingeniería que hemos decidido dedicar nuestro blog de la asignatura de Robótica a explorar una tecnología que, estamos convencidos, va a transformar el mundo laboral en los próximos años: la robótica colaborativa.</p>
+    <p>La idea surgió de forma natural. En clase hablamos de robots industriales, de automatización, de PLC y de sistemas de control. Todo muy interesante. Pero cuando alguien mencionó que ya existen robots que trabajan <em>con</em> las personas en lugar de <em>en lugar</em> de ellas, algo hizo clic. Eso era lo que queríamos explorar.</p>
+
+    <div class="team-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.5rem 0">
+      <div class="team-card">
+        <div class="team-avatar">JA</div>
+        <div class="team-name">José Antonio López Vinós</div>
+        <div class="team-role">Sistemas Automatizados</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;text-align:center">Responsable de los contenidos técnicos sobre normativa y seguridad.</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">RG</div>
+        <div class="team-name">Rafael Gallo Arjonilla</div>
+        <div class="team-role">Robótica &amp; Control</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;text-align:center">Encargado de programación, HMI y las entradas sobre medicina y fabricación.</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">MG</div>
+        <div class="team-name">Miguel García Gómez</div>
+        <div class="team-role">Automatización Industrial</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:0.5rem;text-align:center">Responsable de EOAT, agricultura y los casos reales en España.</p>
+      </div>
+    </div>
+
+    <h3>¿Por qué la robótica colaborativa?</h3>
+    <p>Elegimos este tema por varios motivos. El primero, y más sincero, es que nos pareció genuinamente interesante. La robótica industrial clásica lleva décadas con nosotros: grandes brazos mecánicos encerrados en jaulas de seguridad, rápidos y precisos pero completamente ajenos al trabajador. Los cobots cambian esa ecuación.</p>
+    <p>El segundo motivo es la relevancia. Estamos en el umbral de lo que se llama <span class="highlight">Industria 5.0</span>, un modelo que no abandona la tecnología de la 4.0 sino que la reorienta: en lugar de maximizar la eficiencia a cualquier precio, busca que la tecnología sirva al bienestar de las personas. Y los cobots son el símbolo más claro de ese cambio.</p>
+    <p>El tercero es más práctico: la robótica colaborativa está creciendo a un ritmo enorme y ya tiene aplicaciones en sectores tan distintos como la automoción, la medicina, la agricultura o los servicios. Un ingeniero hoy no puede permitirse ignorarla.</p>
+
+    <h3>¿Qué encontrarás en este blog?</h3>
+    <p>Hemos organizado las once entradas del blog en cinco bloques que avanzan progresivamente, desde lo más general hasta lo más específico:</p>
+    <div class="timeline">
+      <div class="timeline-item"><h4>Bloque I — Presentación</h4><p>Esta entrada. Quiénes somos y qué pretendemos.</p></div>
+      <div class="timeline-item"><h4>Bloque II — Entradas técnicas</h4><p>Seguridad (ISO/TS 15066), programación y herramientas de extremo. Para los que quieren entender cómo funciona de verdad.</p></div>
+      <div class="timeline-item"><h4>Bloque III — Divulgación</h4><p>Cobot vs robot, cobots en medicina y en agricultura. Explicado para cualquier lector, no solo ingenieros.</p></div>
+      <div class="timeline-item"><h4>Bloque IV — Casos reales</h4><p>Mercedes-Benz, Carl Zeiss, MANN+HUMMEL, COVAP y el Hospital Reina Sofía. Lo que ya está pasando.</p></div>
+      <div class="timeline-item"><h4>Bloque V — Cierre colectivo</h4><p>Nuestras reflexiones finales sobre el futuro del trabajo junto a las máquinas.</p></div>
+    </div>
+
+    <div class="callout success">
+      <div class="callout-label">Nuestro objetivo</div>
+      <p>Queremos que cuando termines de leer este blog entiendas que la robótica colaborativa no es una amenaza para los trabajadores, sino una herramienta que, bien utilizada, puede hacer que el trabajo sea más seguro, menos agotador y más interesante. Eso es, en esencia, lo que promete la Industria 5.0.</p>
+    </div>
+
+    <p>Gracias por pasarte por aquí. Esperamos que lo que hemos preparado te resulte útil e interesante. ¡Empezamos!</p>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e2">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 02 · Bloque II</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Técnico · Normativa</div>
+        <h2 class="entry-title">Seguridad en robots colaborativos e ISO/TS 15066</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>10 de marzo de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio López Vinós</strong></span>
+      <span class="byline-item">⏱️ 8 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <p>¿Cómo sabe un ingeniero cuánta fuerza puede ejercer un cobot antes de que resulte peligroso? La respuesta está en la <span class="highlight">ISO/TS 15066</span>, la especificación técnica internacional que establece los criterios específicos para la colaboración segura entre humanos y robots. No dice «el robot debe ser seguro»; da valores numéricos concretos para cada zona del cuerpo humano.</p>
+
+    <h3>Marco normativo: ISO 10218 e ISO/TS 15066</h3>
+    <div class="compare">
+      <div class="compare-col robot">
+        <h4>🔒 ISO 10218</h4>
+        <div class="compare-item"><span class="ci">📌</span><span>Norma general para robots industriales y sistemas robotizados</span></div>
+        <div class="compare-item"><span class="ci">📌</span><span>Basada históricamente en la separación física humano-robot</span></div>
+        <div class="compare-item"><span class="ci">📌</span><span>Referencia principal para la certificación de instalaciones</span></div>
+      </div>
+      <div class="compare-col cobot">
+        <h4>✅ ISO/TS 15066</h4>
+        <div class="compare-item"><span class="ci">⚡</span><span>Complementa la ISO 10218 para aplicaciones colaborativas</span></div>
+        <div class="compare-item"><span class="ci">⚡</span><span>Define límites biomecánicos de fuerza y presión por zona corporal</span></div>
+        <div class="compare-item"><span class="ci">⚡</span><span>Permite colaboración sin barreras físicas permanentes</span></div>
+      </div>
+    </div>
+
+    <h3>Sensores de fuerza y par: el sistema nervioso del cobot</h3>
+    <p>La seguridad de un cobot no depende de una jaula; depende de sus sensores. Cada articulación lleva integrados <span class="highlight">sensores de par y fuerza</span> que monitorizan continuamente el esfuerzo mecánico generado durante el movimiento. Cuando detectan una fuerza anómala —como el contacto accidental con un operario— el controlador reacciona en milisegundos: reduce velocidad, desvía la trayectoria o ejecuta una parada suave.</p>
+    <div class="callout warning">
+      <div class="callout-label">Concepto clave</div>
+      <p>A diferencia de una parada de emergencia convencional, las respuestas del cobot son <strong>progresivas y controladas</strong>. No un frenazo brusco, sino una desaceleración que evita generar nuevos riesgos por el propio movimiento de parada.</p>
+    </div>
+
+    <h3>Límites biomecánicos: cuánto puede «doler» un robot</h3>
+    <p>La ISO/TS 15066 introduce un enfoque revolucionario: en lugar de prohibir el contacto, <span class="highlight2">establece cuándo ese contacto es aceptable</span>. Define 29 zonas anatómicas del cuerpo humano con umbrales distintos de tolerancia a la fuerza y la presión.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Zona del Cuerpo</th><th>Límite de Presión (N/cm²)</th><th>Límite de Fuerza (N)</th><th>Nivel de Riesgo</th></tr></thead>
+        <tbody>
+          <tr><td><div class="bio-zone"><div class="bio-dot" style="background:#ef4444"></div>Cráneo / Cara</div></td><td style="color:#ef4444">130</td><td style="color:#ef4444">130</td><td>Muy alto — zona crítica</td></tr>
+          <tr><td><div class="bio-zone"><div class="bio-dot" style="background:#f59e0b"></div>Pecho / Abdomen</div></td><td style="color:#f59e0b">210</td><td style="color:#f59e0b">160</td><td>Alto</td></tr>
+          <tr><td><div class="bio-zone"><div class="bio-dot" style="background:#3b82f6"></div>Espalda</div></td><td style="color:#3b82f6">210</td><td style="color:#3b82f6">210</td><td>Medio</td></tr>
+          <tr><td><div class="bio-zone"><div class="bio-dot" style="background:#10b981"></div>Antebrazo / Mano</div></td><td style="color:#10b981">180</td><td style="color:#10b981">140</td><td>Medio-alto</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Los cuatro modos de operación colaborativa</h3>
+    <div class="modes-grid">
+      <div class="mode-card m1"><div class="mode-icon">🛑</div><div class="mode-name">Parada monitorizada</div><div class="mode-desc">El robot se detiene ante presencia humana. Sin contacto directo. Para accesos puntuales.</div></div>
+      <div class="mode-card m2"><div class="mode-icon">✋</div><div class="mode-name">Guiado manual</div><div class="mode-desc">El operario mueve físicamente el brazo. Para enseñanza de trayectorias y ajuste fino.</div></div>
+      <div class="mode-card m3"><div class="mode-icon">📡</div><div class="mode-name">Velocidad y separación</div><div class="mode-desc">La velocidad del robot disminuye proporcionalmente a la distancia con el operario.</div></div>
+      <div class="mode-card m4"><div class="mode-icon">💡</div><div class="mode-name">Limitación de fuerza</div><div class="mode-desc">El contacto directo está permitido mientras no se superen los límites de la norma.</div></div>
+    </div>
+
+    <div class="callout success">
+      <div class="callout-label">Conclusión técnica</div>
+      <p>La seguridad de un cobot no reside solo en el robot, sino en el <strong>diseño completo de la aplicación</strong>: velocidades, trayectorias, herramientas y modo de operación. Un cobot es tan seguro como la instalación en la que opera.</p>
+    </div>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e3">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 03 · Bloque II</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Técnico · Programación</div>
+        <h2 class="entry-title">Programación por demostración, HMI y Gemelos Digitales</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>17 de marzo de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>Rafael Gallo Arjonilla</strong></span>
+      <span class="byline-item">⏱️ 7 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <p>Una de las barreras históricas de la automatización era la complejidad de programar un robot. Hacerlo requería ingenieros especializados, semanas de puesta en marcha y lenguajes propietarios. Los cobots rompieron este modelo. Hoy, el propio operario de planta puede enseñarle a un robot una nueva tarea en minutos, sin escribir una sola línea de código.</p>
+
+    <h3>Lead-through: el robot aprende por demostración</h3>
+    <p>El método más extendido en robótica colaborativa es la <span class="highlight">programación por demostración</span> (lead-through). El concepto es intuitivo: el operario coge el brazo del cobot y lo mueve físicamente por la trayectoria deseada. El sistema registra posiciones, orientaciones y puntos clave y, a partir de ese momento, los reproduce de forma autónoma.</p>
+    <div class="callout">
+      <div class="callout-label">¿Cómo funciona internamente?</div>
+      <p>Durante el guiado, el controlador activa algoritmos de <strong>compensación dinámica y de gravedad</strong> que reducen la resistencia percibida por el usuario. Mover el brazo resulta casi tan fácil como mover un cursor en pantalla.</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-icon">⏱️</div><div class="card-title">Horas → Minutos</div><div class="card-desc">El tiempo de configuración se reduce de horas a minutos en muchos casos.</div></div>
+      <div class="card"><div class="card-icon">👷</div><div class="card-title">Sin código especializado</div><div class="card-desc">El personal de planta puede programar sin formación avanzada en robótica.</div></div>
+      <div class="card"><div class="card-icon">🔄</div><div class="card-title">Reconfiguración rápida</div><div class="card-desc">Adaptar el robot a un nuevo producto en minutos, no días.</div></div>
+    </div>
+
+    <h3>Gemelos Digitales: probar sin riesgos</h3>
+    <p>Antes de llevar una célula colaborativa a producción, los ingenieros usan <span class="highlight">Gemelos Digitales</span> (Digital Twins): réplicas virtuales 3D del robot y su entorno donde se simulan movimientos, trayectorias y ciclos completos antes de instalar nada físico. Se detectan colisiones, se optimizan tiempos y se valida la seguridad sin interrumpir la producción ni arriesgar a nadie.</p>
+
+    <h3>Interfaces HMI avanzadas: más allá de la pantalla táctil</h3>
+    <p>Las HMI de los cobots han evolucionado hacia sistemas <span class="highlight">multimodales</span>: reconocimiento de voz, control gestual y Realidad Extendida (XR). Dispositivos como Microsoft HoloLens proyectan información virtual sobre el entorno real del operario: trayectorias previstas, alertas de seguridad, estado del sistema, todo sin apartar la vista del área de trabajo.</p>
+    <div class="callout purple">
+      <div class="callout-label">Robotic Puppeteering</div>
+      <p>El operario interactúa con una representación virtual del cobot y sus movimientos se transfieren al robot real. Combinada con comandos de voz, permite programar maniobras complejas de forma intuitiva y reduce errores en la configuración inicial.</p>
+    </div>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e4">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 04 · Bloque II</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Técnico · Herramientas</div>
+        <h2 class="entry-title">Herramientas de extremo (EOAT) y robótica blanda</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>24 de marzo de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>Miguel García Gómez</strong></span>
+      <span class="byline-item">⏱️ 6 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <p>Si el brazo robótico es la estructura, la herramienta de extremo es la mano. El <span class="highlight">End-of-Arm Tooling (EOAT)</span> no solo determina qué tareas puede realizar el cobot, sino también cómo de segura y flexible es toda la instalación.</p>
+
+    <h3>Grippers adaptativos</h3>
+    <p>Los grippers adaptativos son pinzas capaces de <span class="highlight2">ajustar automáticamente su apertura y la fuerza de agarre</span> según el objeto que manipulan. A diferencia de pinzas diseñadas para una geometría concreta, estos sistemas pueden trabajar con formas, pesos y fragilidades distintas sin cambiar de herramienta.</p>
+    <div class="cards">
+      <div class="card"><div class="card-icon">🔧</div><div class="card-title">Gripper mecánico</div><div class="card-desc">Para piezas con geometría definida. Alta precisión y repetibilidad.</div></div>
+      <div class="card"><div class="card-icon">🌬️</div><div class="card-title">Gripper neumático</div><div class="card-desc">Ventosas para superficies lisas. Ideal en automoción y electrónica.</div></div>
+      <div class="card"><div class="card-icon">🧲</div><div class="card-title">Gripper magnético</div><div class="card-desc">Para piezas metálicas. Sin contacto mecánico con la superficie.</div></div>
+      <div class="card"><div class="card-icon">🫧</div><div class="card-title">Soft gripper</div><div class="card-desc">Materiales deformables para objetos frágiles o de forma irregular.</div></div>
+    </div>
+
+    <h3>Soft Robotics: cuando la flexibilidad es la fuerza</h3>
+    <p>La <span class="highlight">robótica blanda</span> usa materiales deformables —siliconas, elastómeros— con actuación neumática. Las garras no imponen una geometría al objeto; se adaptan a su forma distribuyendo la presión de contacto uniformemente. El mismo principio que usa la mano humana para coger un huevo sin romperlo.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Sector</th><th>Aplicación típica</th><th>Ventaja de soft robotics</th></tr></thead>
+        <tbody>
+          <tr><td>🍎 Alimentación</td><td>Frutas, productos horneados</td><td class="td-good">Sin daño; apta para superficies irregulares</td></tr>
+          <tr><td>💻 Electrónica</td><td>Componentes sensibles, PCBs</td><td class="td-good">Evita deformaciones y descargas</td></tr>
+          <tr><td>🌾 Agricultura</td><td>Recolección de tomates, fresas</td><td class="td-good">Adaptación a formas biológicas variables</td></tr>
+          <tr><td>💊 Farmacia</td><td>Viales, cápsulas</td><td class="td-good">Alta higiene, sin aristas metálicas</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout success">
+      <div class="callout-label">Modularidad como ventaja</div>
+      <p>Muchos cobots permiten <strong>cambio rápido de EOAT</strong>, incluso automático. Un solo robot puede realizar agarre, atornillado o inspección visual con solo intercambiar la herramienta en segundos.</p>
+    </div>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e5">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 05 · Bloque III</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Divulgativo</div>
+        <h2 class="entry-title">¿Qué diferencia a un cobot de un robot industrial tradicional?</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>31 de marzo de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio, Rafael &amp; Miguel</strong></span>
+      <span class="byline-item">⏱️ 6 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <div class="personal-note"><p>Esta es nuestra entrada más divulgativa. Si solo puedes leer una, que sea esta. Intentamos explicar la diferencia real sin tecnicismos, porque creemos que antes de entrar en la norma hay que entender por qué existe.</p></div>
+
+    <p>«Un cobot es simplemente un robot más pequeño.» Esta es la idea equivocada más frecuente. La diferencia entre un robot industrial y un cobot no es de escala, sino de <em>filosofía de diseño</em>.</p>
+
+    <h3>La analogía del tren de alta velocidad y el compañero de trabajo</h3>
+    <p>El robot industrial es como un <span class="highlight">tren de alta velocidad</span>: extraordinariamente eficiente y preciso, pero requiere una vía completamente aislada y controlada. Cualquier presencia no autorizada en su espacio genera una parada de emergencia. El cobot, en cambio, se parece más a un <span class="highlight2">compañero de trabajo</span>: adapta sus movimientos al entorno, percibe cuando alguien se acerca y ajusta su comportamiento para evitar incidentes, igual que dos personas compartiendo una mesa.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Característica</th><th>🔴 Robot Industrial</th><th>🟢 Robot Colaborativo</th></tr></thead>
+        <tbody>
+          <tr><td>Seguridad</td><td class="td-warn">Vallado físico obligatorio</td><td class="td-good">Seguridad intrínseca: sensores de fuerza</td></tr>
+          <tr><td>Presencia humana</td><td class="td-warn">Prohibida en zona de trabajo</td><td class="td-good">Permitida y diseñada</td></tr>
+          <tr><td>Flexibilidad</td><td class="td-warn">Fijo, una tarea específica</td><td class="td-good">Reasignable en horas</td></tr>
+          <tr><td>Programación</td><td class="td-warn">Código especializado, experto</td><td class="td-good">Guiado manual, interfaces intuitivas</td></tr>
+          <tr><td>Tiempo de instalación</td><td class="td-warn">Semanas o meses</td><td class="td-good">Días o incluso horas</td></tr>
+          <tr><td>Coste de entrada</td><td class="td-warn">Elevado (robot + infraestructura)</td><td class="td-good">~25.000–35.000 €</td></tr>
+          <tr><td>Velocidad</td><td>Alta, sin restricciones</td><td class="td-warn">Limitada por seguridad</td></tr>
+          <tr><td>Carga máxima</td><td>100–1.000+ kg</td><td class="td-warn">3–35 kg típicamente</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>La anatomía de un cobot: lo que le hace diferente</h3>
+    <div class="cobot-diagram">
+      <div class="diagram-title">Anatomía de un robot colaborativo</div>
+      <div class="cobot-body">
+        <div class="cobot-svg">
+          <svg viewBox="0 0 120 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:140px">
+            <rect x="30" y="175" width="60" height="20" rx="4" fill="#1e2632" stroke="#00d4ff" stroke-width="1.5"/>
+            <rect x="50" y="140" width="20" height="40" rx="6" fill="#1e2632" stroke="#7c3aed" stroke-width="1.5"/>
+            <circle cx="60" cy="138" r="9" fill="#0a0c10" stroke="#00d4ff" stroke-width="2"/><circle cx="60" cy="138" r="4" fill="#00d4ff" opacity="0.7"/>
+            <rect x="52" y="95" width="16" height="45" rx="5" fill="#1e2632" stroke="#7c3aed" stroke-width="1.5"/>
+            <circle cx="60" cy="93" r="9" fill="#0a0c10" stroke="#00d4ff" stroke-width="2"/><circle cx="60" cy="93" r="4" fill="#00d4ff" opacity="0.7"/>
+            <rect x="54" y="55" width="14" height="40" rx="5" fill="#1e2632" stroke="#10b981" stroke-width="1.5"/>
+            <circle cx="61" cy="53" r="8" fill="#0a0c10" stroke="#10b981" stroke-width="2"/><circle cx="61" cy="53" r="3.5" fill="#10b981" opacity="0.7"/>
+            <rect x="55" y="28" width="12" height="27" rx="4" fill="#1e2632" stroke="#7c3aed" stroke-width="1.5"/>
+            <rect x="48" y="18" width="10" height="12" rx="2" fill="#1e2632" stroke="#f59e0b" stroke-width="1.5"/>
+            <rect x="62" y="18" width="10" height="12" rx="2" fill="#1e2632" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="75" y="140" fill="#00d4ff" font-size="7" font-family="monospace">par</text>
+            <text x="75" y="95" fill="#00d4ff" font-size="7" font-family="monospace">par</text>
+            <text x="73" y="55" fill="#10b981" font-size="7" font-family="monospace">fuerza</text>
+            <line x1="73" y1="138" x2="69" y2="138" stroke="#00d4ff" stroke-width="0.8"/>
+            <line x1="73" y1="93" x2="69" y2="93" stroke="#00d4ff" stroke-width="0.8"/>
+            <line x1="71" y1="53" x2="68" y2="53" stroke="#10b981" stroke-width="0.8"/>
+          </svg>
+        </div>
+        <div class="cobot-features">
+          <div class="feature-row"><div class="feature-dot" style="background:#00d4ff"></div><span><strong>Sensores de par/fuerza</strong> — En cada articulación, monitorización en tiempo real</span></div>
+          <div class="feature-row"><div class="feature-dot" style="background:#7c3aed"></div><span><strong>Estructura ligera</strong> — Aleaciones de aluminio y polímeros. Menos inercia, menos energía de impacto</span></div>
+          <div class="feature-row"><div class="feature-dot" style="background:#10b981"></div><span><strong>6 grados de libertad</strong> — Alta destreza en espacios reducidos</span></div>
+          <div class="feature-row"><div class="feature-dot" style="background:#f59e0b"></div><span><strong>EOAT intercambiable</strong> — Herramienta modular adaptable a distintas tareas</span></div>
+          <div class="feature-row"><div class="feature-dot" style="background:#e879f9"></div><span><strong>Control reactivo</strong> — Ante contacto no esperado: parada suave o desvío de trayectoria</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e6">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 06 · Bloque III</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Divulgativo · Salud</div>
+        <h2 class="entry-title">Cobots en medicina y rehabilitación: precisión al servicio del paciente</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>7 de abril de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>Rafael Gallo Arjonilla</strong></span>
+      <span class="byline-item">⏱️ 6 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <p>La robótica colaborativa nació en la fábrica, pero su filosofía de interacción segura con personas la hace perfecta para entornos donde esa interacción es inevitable y crítica: el ámbito médico. En cirugía, diagnóstico y rehabilitación, los cobots <span class="highlight">no reemplazan al profesional sanitario</span>; actúan como extensiones de su habilidad.</p>
+
+    <h3>Cirugía asistida: estabilidad milimétrica</h3>
+    <p>Mantener un instrumento perfectamente estable durante una intervención larga, o ejecutar movimientos repetitivos con exactitud milimétrica, supone un esfuerzo enorme para el cirujano. Un cobot puede asumir esa función: sujetar herramientas, mantener posiciones durante todo el tiempo necesario y ejecutar movimientos guiados, siempre bajo supervisión directa del equipo médico.</p>
+    <div class="callout">
+      <div class="callout-label">Principio básico</div>
+      <p>En medicina, el cobot <strong>nunca actúa de forma autónoma</strong> en tareas críticas. Opera siempre bajo la autorización y supervisión del profesional sanitario. La iniciativa es humana; la precisión y la resistencia a la fatiga, del robot.</p>
+    </div>
+
+    <h3>Rehabilitación asistida: terapias personalizadas</h3>
+    <p>La rehabilitación motora requiere ejercicios repetitivos, progresivos y adaptados a cada paciente. Un cobot reproduce esos movimientos con exactitud constante, ajustando la intensidad según la evolución clínica. Un ejemplo representativo es el sistema <span class="highlight2">ROBERT®</span> (Life Science Robotics): el terapeuta define la secuencia y el sistema la ejecuta con precisión constante sesión tras sesión, reduciendo la carga física del fisioterapeuta.</p>
+    <div class="cards">
+      <div class="card"><div class="card-icon">🔁</div><div class="card-title">Repetibilidad perfecta</div><div class="card-desc">Cada ejercicio, idéntica intensidad y rango de movimiento en cada sesión.</div></div>
+      <div class="card"><div class="card-icon">📊</div><div class="card-title">Datos objetivos</div><div class="card-desc">Registro continuo de fuerza y rango articular para monitorizar la evolución.</div></div>
+      <div class="card"><div class="card-icon">👨‍⚕️</div><div class="card-title">Menos lesiones laborales</div><div class="card-desc">Reduce el esfuerzo físico repetitivo de fisioterapeutas y sanitarios.</div></div>
+      <div class="card"><div class="card-icon">🎯</div><div class="card-title">Terapia personalizada</div><div class="card-desc">Parámetros ajustables según el estadio de recuperación de cada paciente.</div></div>
+    </div>
+    <p>Los cobots también están encontrando su espacio en laboratorios de diagnóstico —manipulación de muestras, análisis automatizado— y en la logística hospitalaria: transporte de medicación y materiales. Tareas repetitivas, con exigencias de higiene elevadas y horarios continuos donde los robots son una ayuda real.</p>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e7">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 07 · Bloque III</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Divulgativo · Agricultura</div>
+        <h2 class="entry-title">Agricultura de precisión: robots que cuidan lo que no puede romperse</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>14 de abril de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>Miguel García Gómez</strong></span>
+      <span class="byline-item">⏱️ 5 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <p>Hay tareas que la automatización industrial clásica nunca pudo abordar: las que implican objetos blandos, irregulares, frágiles y biológicos. Un tomate maduro, una fresa o un racimo de uvas no tienen la geometría predecible de una pieza de aluminio. Sin embargo, la combinación de <span class="highlight">visión artificial</span> y <span class="highlight2">robótica blanda</span> está cambiando esta realidad.</p>
+
+    <h3>El reto de la variabilidad biológica</h3>
+    <p>Los productos agrícolas presentan variabilidad continua en tamaño, forma, color, peso y posición. Un sistema rígido fallaría inevitablemente. Los cobots con visión artificial 3D pueden localizar cada fruto en su posición exacta, estimar su estado de madurez y ejecutar el agarre con la precisión y delicadeza necesarias.</p>
+    <div class="callout success">
+      <div class="callout-label">El papel de la soft robotics</div>
+      <p>Las garras blandas se adaptan a la geometría de cada fruto individualmente, distribuyendo la presión de forma uniforme. El resultado es manipulación sin daño, incluso en productos tan delicados como fresas, espárragos o melocotones.</p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-icon">🍅</div><div class="card-title">Recolección de frutos</div><div class="card-desc">Visión artificial + garras adaptativas para frutas y hortalizas de morfología variable.</div></div>
+      <div class="card"><div class="card-icon">✂️</div><div class="card-title">Poda selectiva</div><div class="card-desc">Identificación de brotes o ramas a tratar mediante análisis de imagen en tiempo real.</div></div>
+      <div class="card"><div class="card-icon">📦</div><div class="card-title">Clasificación y empaquetado</div><div class="card-desc">Selección automática por calibre, color o estado. Reducción significativa de mermas.</div></div>
+      <div class="card"><div class="card-icon">🔄</div><div class="card-title">Adaptabilidad entre campañas</div><div class="card-desc">Reprogramar el sistema para un nuevo cultivo en pocas horas, sin cambiar la maquinaria.</div></div>
+    </div>
+    <p>En la planta de procesado los cobots prolongan sus ventajas: manipulación de productos horneados, envasado de alimentos frágiles, paletizado mixto. Las exigencias de higiene, delicadeza y adaptabilidad hacen de los cobots con soft robotics la solución ideal donde los sistemas rígidos no llegan.</p>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e8">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 08 · Bloque IV</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Caso Real · Automoción</div>
+        <h2 class="entry-title">Cobots en la industria automotriz: ergonomía y calidad en Mercedes-Benz</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>28 de abril de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio López Vinós</strong></span>
+      <span class="byline-item">⏱️ 7 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <p>La industria del automóvil fue pionera en la robotización industrial, pero también ha sido de las primeras en descubrir los límites de la automatización rígida. Hay tareas que requieren continuidad y precisión sin aislar al trabajador. La planta de Mercedes-Benz en Juiz de Fora (Brasil) es un ejemplo concreto de cómo un cobot resuelve exactamente ese desafío.</p>
+
+    <div class="case-study">
+      <div class="case-header">
+        <div class="case-logo">🚗</div>
+        <div>
+          <div class="case-company">Mercedes-Benz — Juiz de Fora, Brasil</div>
+          <div class="case-subtitle">Aplicación de sellantes y adhesivos estructurales · Cobot: UR10e</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <h4>El problema</h4>
+        <p>La aplicación de sellantes y adhesivos sobre componentes estructurales del vehículo durante el ensamblaje exige movimientos lentos, precisos y perfectamente constantes. Cuando se hacía de forma manual generaba dos problemas: <span class="highlight3">variaciones en la calidad del sellado</span> que requerían retrabajo, y una <span class="highlight3">elevada carga física</span> para los operarios que sostenían la herramienta durante largos periodos.</p>
+        <h4>La solución cobot</h4>
+        <p>Se integró un cobot <code>UR10e</code> encargado de sostener la herramienta de aplicación y ejecutar la trayectoria de sellado con alta repetibilidad. Gracias a su diseño colaborativo, opera junto al personal sin cerramientos físicos. El operario supervisó y validó el proceso desde el primer día.</p>
+        <div class="case-metrics">
+          <div class="metric"><span class="metric-val">↓ Retrabajo</span><span class="metric-label">Sellados más uniformes</span></div>
+          <div class="metric"><span class="metric-val">↑ Ergonomía</span><span class="metric-label">Sin carga postural prolongada</span></div>
+          <div class="metric"><span class="metric-val">0</span><span class="metric-label">Barreras de seguridad añadidas</span></div>
+        </div>
+        <div class="quote-block" style="margin-top:1.25rem">
+          <p>Es un robot muy sencillo, con una interfaz muy fácil de usar. Estamos aprendiendo mucho cada día y esperamos que en el futuro tengamos otros componentes, otros robots similares al que tenemos ahora.</p>
+          <div class="quote-author">José Almeida — Planificador de mantenimiento, Mercedes-Benz Juiz de Fora</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Lecciones del caso Mercedes-Benz</h3>
+    <div class="cards">
+      <div class="card"><div class="card-icon">✅</div><div class="card-title">Sin barreras = más espacio</div><div class="card-desc">El cobot se integró en la línea existente sin modificar el layout de la planta.</div></div>
+      <div class="card"><div class="card-icon">📈</div><div class="card-title">Calidad estandarizada</div><div class="card-desc">La repetibilidad del robot elimina la variabilidad inherente a la fatiga humana.</div></div>
+      <div class="card"><div class="card-icon">🧑‍🔧</div><div class="card-title">Operario como supervisor</div><div class="card-desc">El trabajador pasa de ejecutar la tarea repetitiva a supervisar y validar el resultado.</div></div>
+    </div>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e9">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 09 · Bloque IV</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Caso Real · Fabricación Flexible</div>
+        <h2 class="entry-title">Carl Zeiss y MANN+HUMMEL: cobots que multiplicaron la productividad</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>5 de mayo de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>Rafael Gallo Arjonilla</strong></span>
+      <span class="byline-item">⏱️ 8 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <p>Dos empresas, dos contextos distintos, un mismo problema de fondo: procesos limitados por la disponibilidad y la fatiga humana. Los casos de Carl Zeiss en India y MANN+HUMMEL en Zaragoza muestran cómo resolver cuellos de botella reales sin grandes reformas en la infraestructura existente.</p>
+
+    <div class="case-study">
+      <div class="case-header">
+        <div class="case-logo">🔬</div>
+        <div>
+          <div class="case-company">Carl Zeiss India — Bangalore, India</div>
+          <div class="case-subtitle">Automatización de metrología industrial · Cobot: UR5</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <h4>El problema</h4>
+        <p>El Centro Técnico de Metrología de Carl Zeiss en Bangalore disponía de múltiples equipos de medición de precisión, pero la productividad estaba limitada por un factor crítico: <span class="highlight3">un único operador podía gestionar solo una máquina a la vez</span>. Con un equipo de 15-20 personas, el aprovechamiento de los equipos rondaba el 50%.</p>
+        <h4>La solución cobot</h4>
+        <p>Se integró un cobot <code>UR5</code> encargado de escanear códigos de pieza, posicionarlas con precisión y gestionar el flujo entre distintos equipos de medición. Un solo brazo robótico atiende ahora tres máquinas de metrología en el mismo ciclo, operando de forma continua.</p>
+        <div class="case-metrics">
+          <div class="metric"><span class="metric-val">+90%</span><span class="metric-label">Utilización por máquina</span></div>
+          <div class="metric"><span class="metric-val">24/7</span><span class="metric-label">Operación continua</span></div>
+          <div class="metric"><span class="metric-val">1–2 días</span><span class="metric-label">Adaptación a nuevo producto</span></div>
+        </div>
+        <div class="quote-block" style="margin-top:1.25rem">
+          <p>Con un operador teníamos un 50% de productividad. Integrando el cobot, puedes esperar más del 90% de utilización en cada máquina. El futuro es prometedor con cobots.</p>
+          <div class="quote-author">Ravikumar Sirige — Division Manager, Industrial Quality Solutions, Carl Zeiss India</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="case-study" style="margin-top:2rem">
+      <div class="case-header">
+        <div class="case-logo">🏭</div>
+        <div>
+          <div class="case-company">MANN+HUMMEL Ibérica — Zaragoza, España</div>
+          <div class="case-subtitle">Integración en entornos Lean Manufacturing · Cobot: UR10</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <h4>El contexto</h4>
+        <p>La planta de MANN+HUMMEL en Zaragoza fabrica componentes filtrantes para automoción bajo filosofía <em>Lean Manufacturing</em>, lo que exige minimizar desperdicios y mantener la máxima flexibilidad. La transferencia manual de piezas entre máquinas generaba carga física y limitaciones de productividad.</p>
+        <h4>La solución cobot</h4>
+        <p>Se integraron cobots <code>UR10</code> para automatizar la alimentación de máquinas y la transferencia de piezas entre estaciones. Al no requerir barreras, se mantuvieron los principios de flujo abierto propios del Lean, y el operario conservó la capacidad de intervenir en cualquier momento.</p>
+        <div class="case-metrics">
+          <div class="metric"><span class="metric-val">↓ Fatiga</span><span class="metric-label">Ergonomía mejorada</span></div>
+          <div class="metric"><span class="metric-val">↑ OEE</span><span class="metric-label">Eficiencia global</span></div>
+          <div class="metric"><span class="metric-val">Lean</span><span class="metric-label">Filosofía preservada</span></div>
+        </div>
+        <div class="quote-block" style="margin-top:1.25rem">
+          <p>Inicialmente, no sabíamos nada sobre robótica colaborativa y decidimos optar por Universal Robots por su flexibilidad, simplicidad y rápida integración en nuestros procesos.</p>
+          <div class="quote-author">Iñaki Calavia — Process Engineering Manager, MANN+HUMMEL Ibérica</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e10">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 10 · Bloque IV</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Caso Real · España</div>
+        <h2 class="entry-title">Casos reales en España: COVAP (Córdoba) y el Hospital Universitario Reina Sofía</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>12 de mayo de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio, Rafael &amp; Miguel</strong></span>
+      <span class="byline-item">⏱️ 7 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <div class="personal-note"><p>Esta entrada tiene un significado especial para nosotros. Mostrar que lo que llevamos semanas estudiando ya está ocurriendo aquí, en Córdoba, en empresas y hospitales que conocemos de cerca, hace que todo cobre otra dimensión.</p></div>
+
+    <p>Es fácil hablar de cobots cuando los ejemplos son plantas de Brasil o centros tecnológicos de Bangalore. Pero la robótica colaborativa también está transformando empresas y hospitales en España. Esta entrada analiza dos casos concretos de Córdoba que demuestran que el futuro ya ha llegado a nuestro entorno más inmediato.</p>
+
+    <div class="case-study">
+      <div class="case-header">
+        <div class="case-logo">🥛</div>
+        <div>
+          <div class="case-company">COVAP — Pozoblanco, Córdoba</div>
+          <div class="case-subtitle">Automatización de procesos agroalimentarios · Cooperativa del Valle de los Pedroches</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <h4>Contexto</h4>
+        <p>COVAP es una de las cooperativas agroalimentarias más importantes del sur de España, con actividad en lácteos, cárnico e ibérico. La modernización de sus líneas de producción ha incorporado sistemas de automatización avanzada que incluyen robots colaborativos en distintas fases del proceso productivo: clasificación, envasado, paletizado y control de calidad.</p>
+        <h4>¿Por qué cobots en una cooperativa?</h4>
+        <p>El sector agroalimentario presenta condiciones que hacen especialmente interesante la robótica colaborativa. Los productos son perecederos, frágiles y con variabilidad biológica; los procesos requieren altos estándares de higiene; y los operarios realizan tareas repetitivas que generan una alta incidencia de trastornos musculoesqueléticos. Los cobots con garras blandas y visión artificial aportan precisión, higiene y flexibilidad donde los sistemas rígidos no pueden llegar.</p>
+        <div class="cards">
+          <div class="card"><div class="card-icon">🧼</div><div class="card-title">Higiene garantizada</div><div class="card-desc">Diseño libre de juntas y ángulos difíciles de limpiar. Cumplimiento de normativa alimentaria.</div></div>
+          <div class="card"><div class="card-icon">🔄</div><div class="card-title">Flexibilidad de producto</div><div class="card-desc">Adaptación rápida a distintos formatos y referencias sin parar la línea.</div></div>
+          <div class="card"><div class="card-icon">💪</div><div class="card-title">Mejora ergonómica</div><div class="card-desc">Reducción de tareas de manipulación repetitiva que generan lesiones musculoesqueléticas.</div></div>
+        </div>
+        <h4>Impacto</h4>
+        <p>La incorporación de automatización avanzada en COVAP ha permitido mejorar la trazabilidad del producto, reducir errores en el envasado y aumentar la capacidad de producción sin incrementar proporcionalmente la plantilla. Al mismo tiempo, el personal ha podido dedicarse a tareas de supervisión y control de calidad de mayor valor añadido, en línea con los principios de la Industria 5.0.</p>
+        <div class="callout success">
+          <div class="callout-label">Dato relevante</div>
+          <p>COVAP integra más de 12.000 ganaderos y agricultores socios. La automatización colaborativa les permite escalar su producción con estándares de calidad homogéneos, algo inviable con procesos exclusivamente manuales a esa escala.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="case-study" style="margin-top:2rem">
+      <div class="case-header">
+        <div class="case-logo">🏥</div>
+        <div>
+          <div class="case-company">Hospital Universitario Reina Sofía — Córdoba</div>
+          <div class="case-subtitle">Cirugía asistida por robot · Sistema Da Vinci</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <h4>La robótica entra en el quirófano cordobés</h4>
+        <p>El Hospital Universitario Reina Sofía de Córdoba es uno de los centros de referencia del sistema sanitario público andaluz y español. La incorporación del <span class="highlight">sistema quirúrgico Da Vinci</span> representa uno de los ejemplos más avanzados de colaboración humano-robot en el ámbito sanitario de nuestro país.</p>
+
+        <h4>¿Qué es el sistema Da Vinci?</h4>
+        <p>El Da Vinci es un sistema de cirugía mínimamente invasiva asistida por robot. No actúa de forma autónoma: amplifica y refina los movimientos del cirujano, que opera desde una consola con visualización 3D de alta definición. El robot elimina el temblor natural de la mano, permite movimientos con un rango articular imposible para la muñeca humana y escala los movimientos del cirujano con precisión milimétrica.</p>
+        <div class="callout purple">
+          <div class="callout-label">Relación con la colaboración humano-robot</div>
+          <p>Aunque el Da Vinci es tecnológicamente más complejo que un cobot industrial, encarna perfectamente el concepto central de la Industria 5.0: <strong>la tecnología amplifica las capacidades humanas sin sustituirlas</strong>. La habilidad, el juicio y la experiencia son del cirujano; la precisión, la estabilidad y la capacidad de operar en espacios reducidos son del robot.</p>
+        </div>
+        <h4>Aplicaciones en el Reina Sofía</h4>
+        <p>El sistema Da Vinci del Hospital Reina Sofía ha sido utilizado en procedimientos de urología, ginecología, cirugía digestiva y oncológica. Los beneficios para el paciente incluyen incisiones menores, menor pérdida de sangre, menor dolor postoperatorio y tiempos de recuperación significativamente reducidos. Para el cirujano, supone menos fatiga en intervenciones largas y mayor precisión en zonas de difícil acceso.</p>
+        <div class="case-metrics">
+          <div class="metric"><span class="metric-val">↓ Dolor</span><span class="metric-label">Postoperatorio reducido</span></div>
+          <div class="metric"><span class="metric-val">↓ Sangrado</span><span class="metric-label">Incisiones mínimas</span></div>
+          <div class="metric"><span class="metric-val">↑ Precisión</span><span class="metric-label">Movimientos submilimétricos</span></div>
+          <div class="metric"><span class="metric-val">↓ Recuperación</span><span class="metric-label">Menor estancia hospitalaria</span></div>
+        </div>
+        <h4>El cirujano siempre al mando</h4>
+        <p>Es fundamental entender que el Da Vinci no opera solo en ningún momento. Cada movimiento de los brazos robóticos es consecuencia directa de los movimientos del cirujano en la consola. Si el cirujano suelta los controles, el sistema se detiene de forma inmediata. Este principio de <span class="highlight2">supervisión humana constante</span> es exactamente el mismo que regula los cobots industriales: la máquina ejecuta con precisión, el humano decide y supervisa.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">Reflexión final de la entrada</div>
+      <p>Estos dos casos cordobeses nos enseñan algo importante: la robótica colaborativa no es una realidad lejana ni exclusiva de grandes corporaciones internacionales. Está aquí, en nuestro entorno, mejorando la calidad de los productos que consumimos y la atención sanitaria que recibimos. Y eso, para nosotros como futuros ingenieros, lo cambia todo.</p>
+    </div>
+  </div>
+</article>
+</template>
+
+<template id="tpl-e11">
+<article class="entry visible">
+  <div style="padding:4rem 4rem 0">
+    <button class="back-btn" onclick="showHome()">← Volver al blog</button>
+    <div class="entry-header">
+      <span class="entry-num">Entrada 11 · Bloque V</span>
+      <div class="entry-title-group">
+        <div class="entry-tag">Reflexión · Cierre Colectivo</div>
+        <h2 class="entry-title">El futuro de la colaboración humano-robot: industria más humana, no menos</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>19 de mayo de 2025</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio, Rafael &amp; Miguel</strong></span>
+      <span class="byline-item">⏱️ 8 min de lectura</span>
+    </div>
+  </div>
+  <div style="padding:0 4rem 4rem" class="entry-body">
+    <div class="personal-note"><p>Esta es nuestra última entrada y la escribimos los tres juntos. Más que un resumen técnico, es nuestra reflexión honesta sobre lo que hemos aprendido, lo que nos ha sorprendido y lo que creemos que significa todo esto para el futuro del trabajo.</p></div>
+
+    <h3>La pregunta que subyace a todo</h3>
+    <p>Llegar a esta última entrada es llegar a la pregunta que subyace a todo lo que hemos escrito: ¿qué significa realmente que robots y personas trabajen juntos? No como ciencia ficción, sino como realidad cotidiana en fábricas, hospitales y campos de cultivo. La respuesta que emerge es más optimista de lo que los titulares alarmistas suelen sugerir.</p>
+
+    <div class="callout">
+      <div class="callout-label">Nuestra tesis fundamental</div>
+      <p>Los cobots no sustituyen al trabajador. <strong>Amplifican sus capacidades, reducen su carga física y le liberan para concentrarse en lo que genuinamente aporta valor</strong>: el juicio, la creatividad y la resolución de problemas. La Industria 5.0 no es la fábrica sin humanos, es la fábrica <em>para</em> humanos.</p>
+    </div>
+
+    <h3>Impacto social: la ergonomía que no vemos en los titulares</h3>
+    <p>Los trastornos musculoesqueléticos representan en torno al <span class="highlight3">30% de las bajas laborales</span> en entornos industriales. Tendinitis, lumbalgias, lesiones de hombro y muñeca son el coste silencioso de décadas de automatización incompleta. Los cobots cierran esta brecha, asumiendo precisamente los movimientos cíclicos y posturas forzadas que más daño generan. Este impacto no sale en portada, pero cambia vidas.</p>
+
+    <h3>Impacto económico: democratización de la automatización</h3>
+    <p>Uno de los grandes cambios que los cobots han traído es la <span class="highlight2">democratización de la automatización</span>. Donde antes solo las grandes corporaciones podían robotizar sus líneas, hoy una PYME puede alcanzar el retorno de su inversión en 6-18 meses.</p>
+    <div class="roi-bar-wrap">
+      <div class="roi-bar-item"><span class="roi-label">Robot industrial tradicional</span><div class="roi-bar"><div class="roi-fill" data-w="95" style="background:linear-gradient(90deg,#ef4444,#f59e0b)"></div></div><span class="roi-val">3–5 años</span></div>
+      <div class="roi-bar-item"><span class="roi-label">Robot colaborativo</span><div class="roi-bar"><div class="roi-fill" data-w="30"></div></div><span class="roi-val">6–18 meses</span></div>
+      <div class="roi-bar-item"><span class="roi-label">Precio de entrada cobot</span><div class="roi-bar"><div class="roi-fill" data-w="20" style="background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div><span class="roi-val">~25.000 €</span></div>
+    </div>
+
+    <h3>Empleo y formación: el debate real</h3>
+    <p>Sí, los cobots cambian la naturaleza de ciertos empleos. Pero en los casos que hemos estudiado —Mercedes-Benz, MANN+HUMMEL, COVAP, el Reina Sofía— ningún trabajador fue sustituido. Fueron reorientados hacia tareas de mayor valor: supervisión, programación básica, mantenimiento, control de calidad. Esto exige formación continua, y las empresas que lo hacen bien lo saben.</p>
+    <div class="cards">
+      <div class="card"><div class="card-icon">📚</div><div class="card-title">Formación técnica</div><div class="card-desc">Programación por demostración, HMI, diagnóstico básico de averías.</div></div>
+      <div class="card"><div class="card-icon">🔧</div><div class="card-title">Mantenimiento preventivo</div><div class="card-desc">El operario del futuro entiende y cuida el sistema con el que trabaja.</div></div>
+      <div class="card"><div class="card-icon">💡</div><div class="card-title">Mejora continua</div><div class="card-desc">Capacidad para identificar optimizaciones y proponer ajustes al proceso.</div></div>
+      <div class="card"><div class="card-icon">🤝</div><div class="card-title">Colaboración H-R</div><div class="card-desc">Confianza, comunicación y comprensión del comportamiento del cobot como colega.</div></div>
+    </div>
+
+    <h3>Lo que hemos aprendido nosotros</h3>
+    <p>Este proyecto nos ha enseñado mucho más que robótica. Nos ha enseñado a divulgar: a tomar un concepto técnico complejo y explicarlo de forma que cualquier persona lo entienda sin perder rigor. Nos ha enseñado a trabajar en equipo dividiendo responsabilidades y revisando el trabajo de los demás. Y nos ha enseñado a ser críticos con la información, a contrastar fuentes y a no quedarnos con el primer titular.</p>
+    <p>Pero la lección más importante es quizás la más simple: la tecnología no es neutra. Puede diseñarse para sustituir personas o para empoderarlas. Puede crear entornos de trabajo más peligrosos o más seguros. Puede concentrar beneficios en unos pocos o distribuirlos más ampliamente. Los cobots, bien implementados, están del lado correcto de todas estas dicotomías.</p>
+
+    <div class="callout success">
+      <div class="callout-label">Conclusión del grupo</div>
+      <p>La Industria 5.0 no es una revolución tecnológica. Es una revolución de valores. Y la robótica colaborativa es su herramienta más visible. Como futuros ingenieros, queremos ser parte de ese cambio.</p>
+    </div>
+
+    <div style="margin-top:2rem">
+      <span class="pill">🤖 Cobots como herramienta</span>
+      <span class="pill">🧑‍🏭 Operario en el centro</span>
+      <span class="pill">📉 Menos lesiones laborales</span>
+      <span class="pill">🌱 Industria sostenible</span>
+      <span class="pill">🔄 Producción flexible</span>
+      <span class="pill">📚 Formación continua</span>
+      <span class="pill">💶 ROI para PYMES</span>
+      <span class="pill">🌍 Industria 5.0</span>
+    </div>
+
+    <p style="margin-top:2rem;color:var(--text-muted);font-style:italic;font-size:0.9rem">Gracias por leer CoBot Lab. Ha sido un placer compartir este proyecto con vosotros. — José Antonio, Rafael y Miguel</p>
+  </div>
+</article>
+</template>
+
+<script>
+  const progressBar = document.getElementById('progress-bar');
+  const backTop = document.getElementById('back-top');
+
+  window.addEventListener('scroll', () => {
+    const docH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    progressBar.style.width = (window.scrollY / docH * 100) + '%';
+    if (window.scrollY > 400) backTop.classList.add('show');
+    else backTop.classList.remove('show');
+    updateActiveNav();
+    animateRoiBars();
+  });
+
+  function updateActiveNav() {
+    const items = document.querySelectorAll('.nav-item');
+    const vh = document.getElementById('view-home');
+    if (vh.classList.contains('active')) {
+      items[0].classList.add('active');
+      for (let i=1;i<items.length;i++) items[i].classList.remove('active');
+    }
+  }
+
+  function showHome() {
+    document.getElementById('view-home').classList.add('active');
+    document.getElementById('view-entry').classList.remove('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+    updateNavForHome();
+    closeMenu();
+    // animate sections
+    setTimeout(()=>{
+      document.getElementById('about-sec').style.opacity='1';
+      document.getElementById('about-sec').style.transform='none';
+      document.getElementById('index-sec').style.opacity='1';
+      document.getElementById('index-sec').style.transform='none';
+    },100);
+  }
+
+  function updateNavForHome(){
+    document.querySelectorAll('.nav-item').forEach((it,i)=>{
+      it.classList.toggle('active', i===0);
+    });
+  }
+
+  function showEntry(id) {
+    const tpl = document.getElementById('tpl-'+id);
+    if (!tpl) return;
+    const content = document.getElementById('entry-content');
+    content.innerHTML = tpl.innerHTML;
+    document.getElementById('view-home').classList.remove('active');
+    document.getElementById('view-entry').classList.add('active');
+    window.scrollTo({top:0,behavior:'instant'});
+    closeMenu();
+    // update nav
+    const nums = {'e1':1,'e2':2,'e3':3,'e4':4,'e5':5,'e6':6,'e7':7,'e8':8,'e9':9,'e10':10,'e11':11};
+    const idx = nums[id];
+    document.querySelectorAll('.nav-item').forEach((it,i)=>{
+      it.classList.toggle('active', i === idx);
+    });
+    // roi bars
+    setTimeout(animateRoiBars, 400);
+  }
+
+  let roiAnimated = false;
+  function animateRoiBars() {
+    const bars = document.querySelectorAll('.roi-fill');
+    if (!bars.length) { roiAnimated=false; return; }
+    bars.forEach(bar => {
+      const w = bar.getAttribute('data-w');
+      if (w && bar.style.width === '0px' || bar.style.width === '' || bar.style.width === '0%') {
+        bar.style.width = w + '%';
+      }
+    });
+  }
+
+  function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
+  document.getElementById('overlay').addEventListener('click', closeMenu);
+
+  // IntersectionObserver for cards on homepage
+  const homeObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.style.opacity='1';
+        e.target.style.transform='none';
+      }
+    });
+  },{threshold:0.05});
+  homeObserver.observe(document.getElementById('about-sec'));
+  homeObserver.observe(document.getElementById('index-sec'));
+
+  // Initial animate
+  setTimeout(()=>{
+    document.getElementById('about-sec').style.opacity='1';
+    document.getElementById('about-sec').style.transform='none';
+    setTimeout(()=>{
+      document.getElementById('index-sec').style.opacity='1';
+      document.getElementById('index-sec').style.transform='none';
+    },150);
+  },200);
+</script>
+</body>
+</html>
