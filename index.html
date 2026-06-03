@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Blog divulgativo sobre Robótica Colaborativa e Industria 5.0. Casos reales, normativas, innovación y el futuro del trabajo conjunto entre humanos y máquinas.">
+<meta name="keywords" content="Robótica Colaborativa, Cobots, Industria 5.0, ISO 15066, Da Vinci, Automatización, Ingeniería">
+<meta name="author" content="José Antonio López Vinós, Rafael Gallo Arjonilla, Miguel García Gómez">
+<meta property="og:title" content="CoBot Lab — Blog de Robótica Colaborativa · Industria 5.0">
+<meta property="og:description" content="Descubre cómo la colaboración humano-robot está transformando la industria y la sociedad en nuestro blog universitario.">
+<meta property="og:type" content="website">
+<title>CoBot Lab — Blog de Robótica Colaborativa · Industria 5.0</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+  :root {
+    --bg:#0a0c10;--bg2:#0f1218;--bg3:#161b24;--border:rgba(255,255,255,0.07);
+    --text:#e8eaf0;--text-muted:#8b94a8;--accent:#00d4ff;--accent2:#7c3aed;
+    --accent3:#10b981;--accent-warm:#f59e0b;--sidebar-w:300px;--progress-h:3px;
+    --radius:12px;--shadow:0 8px 40px rgba(0,0,0,0.5);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:16.5px;line-height:1.75;overflow-x:hidden}
+  
+  /* UX Enhancements: Better links and selections */
+  a {color:var(--accent);text-decoration:none;transition:color 0.2s}
+  a:hover {color:var(--accent2)}
+  ::selection {background:rgba(0,212,255,0.2);color:#fff}
+  
+  #progress-bar{position:fixed;top:0;left:0;height:var(--progress-h);width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:9999;transition:width 0.1s linear}
+  
+  /* SIDEBAR */
+  #sidebar{position:fixed;left:0;top:0;width:var(--sidebar-w);height:100vh;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;z-index:100;display:flex;flex-direction:column;padding:0 0 2rem;transition:transform 0.3s ease}
+  .sidebar-logo{padding:1.75rem 1.5rem 1.25rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(15,18,24,0.95);backdrop-filter:blur(10px);z-index:2}
+  .sidebar-logo .brand{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--accent);letter-spacing:-0.02em}
+  .sidebar-logo .brand span{color:var(--text-muted);font-style:italic}
+  .sidebar-logo .tagline{font-size:0.75rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;margin-top:0.35rem}
+  .nav-section{padding:1.25rem 1rem 0.5rem 1.5rem;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);font-weight:700}
+  .nav-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.6rem 1rem 0.6rem 1.5rem;text-decoration:none;color:var(--text-muted);font-size:0.85rem;font-weight:400;border-left:3px solid transparent;transition:all 0.2s;cursor:pointer;line-height:1.4}
+  .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+  .nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,212,255,0.05)}
+  .nav-num{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent2);min-width:20px;padding-top:1px}
+  
+  /* MAIN */
+  #main{margin-left:var(--sidebar-w);min-height:100vh;padding-bottom:6rem}
+  
+  /* VIEWS */
+  .view{display:none; animation:fadeIn 0.4s ease forwards}
+  .view.active{display:block}
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px)} to {opacity:1; transform:translateY(0)} }
+  
+  /* HERO */
+  #hero{position:relative;padding:6rem 4rem 5rem;background:var(--bg);overflow:hidden;border-bottom:1px solid var(--border)}
+  .hero-grid{position:absolute;inset:0;opacity:0.03;background-image:linear-gradient(var(--accent) 1px,transparent 1px),linear-gradient(90deg,var(--accent) 1px,transparent 1px);background-size:40px 40px}
+  .hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,0.08) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none}
+  .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);color:var(--accent);font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.4rem 1rem;border-radius:100px;margin-bottom:1.5rem}
+  .hero-title{font-family:'DM Serif Display',serif;font-size:clamp(2.5rem,5vw,4.5rem);line-height:1.1;letter-spacing:-0.03em;max-width:750px;margin-bottom:1.5rem}
+  .hero-title em{color:var(--accent);font-style:italic}
+  .hero-sub{color:var(--text-muted);font-size:1.05rem;max-width:600px;margin-bottom:3rem;line-height:1.7}
+  .hero-stats{display:flex;gap:3rem;flex-wrap:wrap}
+  .stat{display:flex;flex-direction:column;gap:0.3rem}
+  .stat-val{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:500;color:var(--accent)}
+  .stat-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+  
+  /* ABOUT SECTION (homepage) */
+  .about-section{padding:4rem;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:4rem}
+  .about-block h2{font-family:'DM Serif Display',serif;font-size:1.75rem;margin-bottom:1.25rem;color:var(--text)}
+  .about-block p{color:#c5c9d6;font-size:0.95rem;margin-bottom:1rem;line-height:1.7}
+  .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:1.5rem}
+  .team-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;transition:border-color 0.2s,transform 0.2s}
+  .team-card:hover{border-color:rgba(0,212,255,0.3);transform:translateY(-3px)}
+  .team-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;color:#fff}
+  .team-name{font-weight:600;font-size:0.9rem;color:var(--text);margin-bottom:0.3rem}
+  .team-role{font-size:0.75rem;color:var(--text-muted)}
+  .obj-list{list-style:none;margin-top:1rem}
+  .obj-list li{display:flex;gap:0.8rem;align-items:flex-start;padding:0.6rem 0;border-bottom:1px solid var(--border);font-size:0.92rem;color:#c5c9d6}
+  .obj-list li:last-child{border-bottom:none}
+  .obj-list li::before{content:'→';color:var(--accent);font-weight:bold;flex-shrink:0;margin-top:2px}
+  
+  /* BLOG INDEX */
+  .blog-index{padding:4rem}
+  .blog-index-title{font-family:'DM Serif Display',serif;font-size:2.2rem;margin-bottom:0.5rem;color:var(--text)}
+  .blog-index-sub{color:var(--text-muted);font-size:0.95rem;margin-bottom:3rem}
+  .block-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-muted);font-weight:700;padding:2rem 0 1rem;border-top:1px solid var(--border);margin-top:1.5rem}
+  .block-label:first-of-type{border-top:none;padding-top:0;margin-top:0}
+  .entry-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;margin-bottom:1rem}
+  .entry-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem;cursor:pointer;transition:all 0.3s ease;text-decoration:none;display:flex;flex-direction:column;position:relative;overflow:hidden}
+  .entry-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity 0.3s}
+  .entry-card:hover{border-color:rgba(0,212,255,0.3);transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.3)}
+  .entry-card:hover::before{opacity:1}
+  .ec-num{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--accent2);margin-bottom:0.6rem}
+  .ec-tag{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent3);font-weight:600;margin-bottom:0.5rem}
+  .ec-title{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--text);line-height:1.3;margin-bottom:0.8rem}
+  .ec-excerpt{font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:1.5rem;flex-grow:1}
+  .ec-meta{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:1rem;font-size:0.75rem;color:var(--text-muted)}
+  .ec-date{font-family:'JetBrains Mono',monospace;font-size:0.7rem}
+  .ec-read{color:var(--accent);font-weight:600;font-size:0.8rem;display:flex;align-items:center;gap:0.3rem}
+  
+  /* ENTRY PAGE */
+  .entry{padding:4rem;border-bottom:1px solid var(--border);position:relative}
+  .back-btn{display:inline-flex;align-items:center;gap:0.5rem;color:var(--text);font-size:0.85rem;cursor:pointer;margin-bottom:2.5rem;padding:0.5rem 1rem;border:1px solid var(--border);border-radius:8px;background:var(--bg3);transition:all 0.2s;font-weight:500}
+  .back-btn:hover{color:var(--accent);border-color:var(--accent);background:rgba(0,212,255,0.05)}
+  .entry-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem}
+  .entry-num{font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--accent2);background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);padding:0.4rem 0.8rem;border-radius:6px;white-space:nowrap;margin-top:0.4rem}
+  .entry-tag{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent3);margin-bottom:0.5rem;font-weight:700}
+  .entry-title{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.2;letter-spacing:-0.02em;color:var(--text)}
+  .entry-byline{display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;margin-bottom:3rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+  .byline-item{font-size:0.85rem;color:var(--text-muted);display:flex;align-items:center;gap:0.4rem}
+  .byline-item strong{color:var(--text)}
+  
+  .entry-body{max-width:800px; margin: 0 auto;}
+  .entry-body p{color:#d1d5db;margin-bottom:1.5rem;font-size:1.05rem;line-height:1.8}
+  .entry-body h3{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--text);margin:2.5rem 0 1rem;letter-spacing:-0.01em}
+  .entry-body h4{font-size:1rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent);margin:2rem 0 0.75rem}
+  .entry-body ul {margin-bottom: 1.5rem; padding-left: 1.5rem; color: #d1d5db; line-height: 1.8;}
+  .entry-body li {margin-bottom: 0.5rem;}
+  
+  /* CARDS */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin:2rem 0}
+  .card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:border-color 0.2s,transform 0.2s}
+  .card:hover{border-color:rgba(0,212,255,0.25);transform:translateY(-2px)}
+  .card-icon{font-size:1.8rem;margin-bottom:0.8rem}
+  .card-title{font-weight:600;font-size:1rem;color:var(--text);margin-bottom:0.5rem}
+  .card-desc{font-size:0.85rem;color:var(--text-muted);line-height:1.6}
+  
+  /* CALLOUT */
+  .callout{border-left:4px solid var(--accent);background:rgba(0,212,255,0.05);border-radius:0 var(--radius) var(--radius) 0;padding:1.25rem 1.5rem;margin:2rem 0}
+  .callout.warning{border-left-color:var(--accent-warm);background:rgba(245,158,11,0.05)}
+  .callout.success{border-left-color:var(--accent3);background:rgba(16,185,129,0.05)}
+  .callout.purple{border-left-color:var(--accent2);background:rgba(124,58,237,0.05)}
+  .callout-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);margin-bottom:0.5rem}
+  .callout.warning .callout-label{color:var(--accent-warm)}
+  .callout.success .callout-label{color:var(--accent3)}
+  .callout.purple .callout-label{color:var(--accent2)}
+  .callout p{color:#e8eaf0;font-size:0.95rem;margin:0;line-height:1.6}
+  
+  /* QUOTE */
+  .quote-block{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem 2rem;margin:2rem 0;position:relative}
+  .quote-block::before{content:'"';font-family:'DM Serif Display',serif;font-size:4.5rem;color:var(--accent2);opacity:0.2;position:absolute;top:-0.5rem;left:1.5rem;line-height:1}
+  .quote-block p{font-style:italic;color:var(--text);font-size:1.05rem;padding-left:1.5rem;margin:0 0 1rem;line-height:1.6}
+  .quote-author{font-size:0.85rem;color:var(--accent);font-weight:600;padding-left:1.5rem}
+  
+  /* TABLE */
+  .table-wrap{overflow-x:auto;margin:2rem 0;border-radius:var(--radius);border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse;font-size:0.9rem}
+  thead{background:var(--bg3)}
+  th{padding:1rem 1.25rem;text-align:left;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);font-weight:700;border-bottom:1px solid var(--border)}
+  td{padding:1rem 1.25rem;border-bottom:1px solid var(--border);color:#c5c9d6;vertical-align:top;line-height:1.5}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:rgba(255,255,255,0.02)}
+  td:first-child{font-weight:600;color:var(--text)}
+  .td-good{color:var(--accent3)}
+  .td-warn{color:var(--accent-warm)}
+  
+  /* TIMELINE */
+  .timeline{margin:2rem 0;position:relative;padding-left:2.5rem}
+  .timeline::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent2));border-radius:2px}
+  .timeline-item{position:relative;margin-bottom:2rem}
+  .timeline-item::before{content:'';position:absolute;left:-2.25rem;top:0.4rem;width:14px;height:14px;border-radius:50%;background:var(--accent);border:3px solid var(--bg)}
+  .timeline-item h4{margin:0 0 0.5rem;font-size:1.05rem;font-weight:600;color:var(--text);text-transform:none;letter-spacing:0}
+  .timeline-item p{font-size:0.9rem;color:var(--text-muted);margin:0;line-height:1.6}
+  
+  /* CASE STUDY */
+  .case-study{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:2rem 0}
+  .case-header{background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(0,212,255,0.05));border-bottom:1px solid var(--border);padding:1.5rem;display:flex;align-items:center;gap:1.25rem}
+  .case-logo{width:48px;height:48px;border-radius:10px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:1px solid var(--border)}
+  .case-company{font-weight:700;font-size:1.1rem;color:var(--text)}
+  .case-subtitle{font-size:0.85rem;color:var(--text-muted)}
+  .case-body{padding:1.75rem}
+  .case-metrics{display:flex;gap:2rem;flex-wrap:wrap;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+  .metric{display:flex;flex-direction:column}
+  .metric-val{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--accent3)}
+  .metric-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em}
+  
+  /* BIO & COMPARE */
+  .bio-zone{display:flex;align-items:center;gap:0.5rem}
+  .bio-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden;margin:2rem 0}
+  .compare-col{background:var(--bg3);padding:1.75rem}
+  .compare-col h4{text-align:center;font-size:0.9rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;padding-bottom:1rem;margin-bottom:1.25rem;border-bottom:1px solid var(--border);color:var(--text);margin-top:0}
+  .compare-col.robot h4{color:#ef4444}
+  .compare-col.cobot h4{color:var(--accent3)}
+  .compare-item{display:flex;gap:0.75rem;font-size:0.9rem;margin-bottom:0.8rem;align-items:flex-start;line-height:1.5}
+  .compare-item .ci{flex-shrink:0}
+  
+  /* PILLS */
+  .pill{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:100px;padding:0.4rem 1rem;font-size:0.85rem;color:var(--text-muted);margin:0.3rem;transition:all 0.2s}
+  .pill:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,0.05)}
+  
+  /* PERSONAL NOTE */
+  .personal-note{background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(0,212,255,0.05));border:1px solid rgba(124,58,237,0.2);border-radius:var(--radius);padding:1.75rem 2rem;margin:2rem 0;position:relative}
+  .personal-note::before{content:'✍️';position:absolute;top:-1rem;left:1.5rem;font-size:1.5rem;background:var(--bg);padding:0 0.5rem;border-radius:50%}
+  .personal-note p{color:#d1d5db;font-size:1rem;font-style:italic;margin:0;line-height:1.6}
+  
+  /* INTERACTION & COMMENTS */
+  .interaction-section {margin-top: 4rem; padding-top: 3rem; border-top: 1px solid var(--border);}
+  .interaction-section h3 {font-family: 'Space Grotesk', sans-serif; font-size: 1.4rem; margin-bottom: 1.5rem;}
+  .btn-like {display:inline-flex;align-items:center;gap:0.6rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:0.95rem;padding:0.6rem 1.25rem;border-radius:100px;cursor:pointer;transition:all 0.2s;margin-bottom:2.5rem;font-weight:500;}
+  .btn-like:hover {border-color:#ef4444; background:rgba(239,68,68,0.1); color:#ef4444;}
+  .btn-like span {background:var(--border);padding:0.1rem 0.6rem;border-radius:100px;font-size:0.85rem;}
+  
+  .comments-list {display:flex; flex-direction:column; gap:1.25rem; margin-bottom:2rem;}
+  .comment {background:var(--bg3); padding:1.25rem; border-radius:var(--radius); border:1px solid var(--border);}
+  .comment-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;}
+  .comment strong {color:var(--text); font-size:0.95rem;}
+  .comment span {font-size:0.75rem; color:var(--text-muted); font-family:'JetBrains Mono',monospace;}
+  .comment p {margin:0 !important; color:#c5c9d6; font-size:0.95rem; line-height:1.5;}
+  
+  .comment-form {display:flex; flex-direction:column; gap:1rem; background:var(--bg2); padding:1.5rem; border-radius:var(--radius); border:1px solid var(--border);}
+  .comment-form input, .comment-form textarea {background:var(--bg3); border:1px solid var(--border); color:var(--text); font-family:inherit; padding:0.8rem 1rem; border-radius:8px; font-size:0.95rem; transition:border-color 0.2s; outline:none;}
+  .comment-form input:focus, .comment-form textarea:focus {border-color:var(--accent);}
+  .comment-form textarea {resize:vertical; min-height:100px;}
+  .comment-form button {background:var(--text); color:var(--bg); border:none; padding:0.8rem 1.5rem; border-radius:8px; font-weight:600; cursor:pointer; font-family:inherit; font-size:0.95rem; transition:background 0.2s; align-self:flex-start;}
+  .comment-form button:hover {background:var(--accent);}
+  
+  /* REFERENCES */
+  .references-section {margin-top: 3.5rem; padding: 2rem; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border);}
+  .references-section h4 {font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 1rem; margin-top: 0;}
+  .references-section ul {list-style: none; padding: 0; margin: 0;}
+  .references-section li {font-size: 0.85rem; color: #8b94a8; margin-bottom: 0.75rem; display:flex; gap:0.5rem;}
+  .references-section li::before {content: '📄'; font-size: 0.9rem;}
+  .references-section a {color: var(--accent2); word-break: break-all;}
+  .references-section a:hover {color: var(--accent); text-decoration: underline;}
+  
+  /* HIGHLIGHTS & OTHERS */
+  .highlight{color:var(--accent);font-weight:600}
+  .highlight2{color:var(--accent3);font-weight:600}
+  .highlight3{color:var(--accent-warm);font-weight:600}
+  code{font-family:'JetBrains Mono',monospace;font-size:0.85rem;background:rgba(255,255,255,0.06);padding:0.2em 0.4em;border-radius:4px;color:var(--accent)}
+  
+  #back-top{position:fixed;bottom:2rem;right:2rem;width:48px;height:48px;background:var(--bg3);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font-size:1.2rem;opacity:0;transform:translateY(10px);transition:all 0.3s;z-index:200;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+  #back-top.show{opacity:1;transform:translateY(0)}
+  #back-top:hover{color:var(--accent);border-color:var(--accent)}
+  
+  #menu-toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:300;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.8rem;cursor:pointer;color:var(--text);font-size:1.2rem}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:90;backdrop-filter:blur(4px)}
+  
+  footer{padding:3rem 4rem;border-top:1px solid var(--border);color:var(--text-muted);font-size:0.85rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:2rem;background:var(--bg2)}
+  
+  /* RESPONSIVE */
+  @media(max-width:900px){
+    #menu-toggle{display:flex}
+    #sidebar{transform:translateX(-100%)}
+    #sidebar.open{transform:translateX(0)}
+    .sidebar-overlay.open{display:block}
+    #main{margin-left:0}
+    .entry,.blog-index,#hero,.about-section{padding:3rem 1.5rem}
+    .hero-stats{gap:2rem}
+    .compare{grid-template-columns:1fr}
+    .about-section{grid-template-columns:1fr; gap:3rem;}
+    footer{padding:2.5rem 1.5rem; flex-direction:column; text-align:center;}
+    footer div {text-align:center !important;}
+  }
+  ::-webkit-scrollbar{width:8px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:4px}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.25)}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">CoBot<span>Lab</span></div>
+    <div class="tagline">Robótica Colaborativa · Industria 5.0</div>
+  </div>
+  
+  <div class="nav-section">Blog</div>
+  <a class="nav-item active" onclick="showHome()">
+    <span class="nav-num">🏠</span>Inicio
+  </a>
+  
+  <div class="nav-section">Bloque 1 · Presentación</div>
+  <a class="nav-item" onclick="showEntry('e1')">
+    <span class="nav-num">01</span>Presentación del grupo y del proyecto
+  </a>
+  
+  <div class="nav-section">Bloque 2 · Entradas Técnicas</div>
+  <a class="nav-item" onclick="showEntry('e2')">
+    <span class="nav-num">02</span>Seguridad en robots e ISO/TS 15066
+  </a>
+  <a class="nav-item" onclick="showEntry('e3')">
+    <span class="nav-num">03</span>Programación por demostración y control
+  </a>
+  <a class="nav-item" onclick="showEntry('e4')">
+    <span class="nav-num">04</span>Herramientas de extremo (EOAT)
+  </a>
+  
+  <div class="nav-section">Bloque 3 · Divulgación</div>
+  <a class="nav-item" onclick="showEntry('e5')">
+    <span class="nav-num">05</span>Cobot vs Robot Industrial
+  </a>
+  <a class="nav-item" onclick="showEntry('e6')">
+    <span class="nav-num">06</span>Cobots en medicina y rehabilitación
+  </a>
+  <a class="nav-item" onclick="showEntry('e7')">
+    <span class="nav-num">07</span>Agricultura de precisión
+  </a>
+  
+  <div class="nav-section">Bloque 4 · Reflexión y Aplicación</div>
+  <a class="nav-item" onclick="showEntry('e8')">
+    <span class="nav-num">08</span>Industria automotriz: ergonomía
+  </a>
+  <a class="nav-item" onclick="showEntry('e9')">
+    <span class="nav-num">09</span>Fabricación flexible y calidad
+  </a>
+  <a class="nav-item" onclick="showEntry('e10')">
+    <span class="nav-num">10</span>Los cobots más allá de la fábrica
+  </a>
+  
+  <div class="nav-section">Bloque 5 · Cierre</div>
+  <a class="nav-item" onclick="showEntry('e11')">
+    <span class="nav-num">11</span>Conclusiones y aprendizajes
+  </a>
+</aside>
+
+<div class="sidebar-overlay" id="overlay"></div>
+<button id="menu-toggle" onclick="toggleMenu()">☰</button>
+
+<main id="main">
+
+<!-- ===================== VIEW: HOME ===================== -->
+<div id="view-home" class="view active">
+  <section id="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-badge"><span>◉</span> Blog de Divulgación Tecnológica</div>
+    <h1 class="hero-title">Bienvenidos a <em>CoBot Lab</em></h1>
+    <p class="hero-sub">Explorando el paradigma de la Industria 5.0. Analizamos cómo la robótica colaborativa redefine la relación entre el ser humano y la máquina, priorizando la ergonomía, la seguridad y la inteligencia humana.</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-val">11</span><span class="stat-label">Artículos</span></div>
+      <div class="stat"><span class="stat-val">5</span><span class="stat-label">Bloques Temáticos</span></div>
+      <div class="stat"><span class="stat-val">3</span><span class="stat-label">Autores (Ingeniería)</span></div>
+      <div class="stat"><span class="stat-val">2026</span><span class="stat-label">Edición</span></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about-section" id="about-sec">
+    <div class="about-block">
+      <h2>Sobre el Proyecto</h2>
+      <p>Somos José Antonio, Rafael y Miguel, estudiantes de Ingeniería. Este espacio digital nace como un proyecto enfocado a comprender y divulgar las tecnologías subyacentes a la robótica colaborativa.</p>
+      <p>Nuestro objetivo es analizar la transición desde la automatización industrial rígida y aislada (Industria 4.0), hacia un modelo productivo centrado en el trabajador, donde los cobots asumen las tareas repetitivas y físicamente exigentes.</p>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-avatar">JA</div>
+          <div class="team-name">José Antonio López Vinós</div>
+          <div class="team-role">Sistemas Automatizados</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">RG</div>
+          <div class="team-name">Rafael Gallo Arjonilla</div>
+          <div class="team-role">Robótica &amp; Control</div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">MG</div>
+          <div class="team-name">Miguel García Gómez</div>
+          <div class="team-role">Automatización Industrial</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-block">
+      <h2>Propósito y Temática</h2>
+      <p>En este blog documentamos la investigación académica desarrollada sobre los sistemas colaborativos, buscando un equilibrio entre el rigor técnico y la divulgación accesible para todos los públicos.</p>
+      <ul class="obj-list">
+        <li>Exponer los principios de seguridad intrínseca y la normativa ISO/TS 15066.</li>
+        <li>Analizar metodologías de programación por demostración (Lead-through).</li>
+        <li>Estudiar el impacto del uso de herramientas adaptativas y robótica blanda (EOAT).</li>
+        <li>Evaluar casos de éxito reales en automoción, manufactura flexible y salud (Da Vinci).</li>
+        <li>Divulgar los beneficios ergonómicos y económicos de la Industria 5.0.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- BLOG INDEX -->
+  <section class="blog-index" id="index-sec">
+    <div class="blog-index-title">Índice de Contenidos</div>
+    <div class="blog-index-sub">Selecciona una publicación para acceder al artículo completo y a su bibliografía.</div>
+
+    <div class="block-label">Bloque 1 — Presentación del Grupo</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e1')">
+        <div class="ec-num">Entrada 01</div>
+        <div class="ec-tag">Presentación</div>
+        <div class="ec-title">Presentación del grupo y del proyecto</div>
+        <div class="ec-excerpt">Conoce quiénes somos, la temática elegida sobre Industria 5.0 y los objetivos de divulgación que perseguimos en este espacio.</div>
+        <div class="ec-meta">
+          <span class="ec-date">20/05/2026</span>
+          <span class="ec-read">Leer artículo →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-label">Bloque 2 — Entradas Técnicas</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e2')">
+        <div class="ec-num">Entrada 02</div>
+        <div class="ec-tag">Normativa &amp; Seguridad</div>
+        <div class="ec-title">Seguridad en robots colaborativos e ISO/TS 15066</div>
+        <div class="ec-excerpt">Análisis de límites biomecánicos, umbrales de dolor y los modos de colaboración que hacen segura la interacción humano-máquina.</div>
+        <div class="ec-meta"><span class="ec-date">22/05/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e3')">
+        <div class="ec-num">Entrada 03</div>
+        <div class="ec-tag">Sistemas de Control</div>
+        <div class="ec-title">Programación por demostración y sistemas de control</div>
+        <div class="ec-excerpt">Explorando metodologías como el lead-through, interfaces avanzadas y Gemelos Digitales para la configuración ágil de cobots.</div>
+        <div class="ec-meta"><span class="ec-date">24/05/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e4')">
+        <div class="ec-num">Entrada 04</div>
+        <div class="ec-tag">Manipulación Física</div>
+        <div class="ec-title">Herramientas de extremo (EOAT) y robótica blanda</div>
+        <div class="ec-excerpt">De pinzas mecánicas a soft robotics: la importancia de diseñar efectores finales adaptativos y seguros.</div>
+        <div class="ec-meta"><span class="ec-date">25/05/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+    </div>
+
+    <div class="block-label">Bloque 3 — Entradas Divulgativas</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e5')">
+        <div class="ec-num">Entrada 05</div>
+        <div class="ec-tag">Conceptos Clave</div>
+        <div class="ec-title">¿Qué diferencia a un cobot de un robot industrial tradicional?</div>
+        <div class="ec-excerpt">Comprende de forma intuitiva el salto tecnológico y filosófico desde las celdas aisladas hacia los espacios de trabajo compartidos.</div>
+        <div class="ec-meta"><span class="ec-date">27/05/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e6')">
+        <div class="ec-num">Entrada 06</div>
+        <div class="ec-tag">Salud &amp; Asistencia</div>
+        <div class="ec-title">Cobots en medicina y rehabilitación</div>
+        <div class="ec-excerpt">Cómo la robótica asiste en la precisión quirúrgica y garantiza movimientos repetitivos exactos en la terapia motora.</div>
+        <div class="ec-meta"><span class="ec-date">28/05/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e7')">
+        <div class="ec-num">Entrada 07</div>
+        <div class="ec-tag">Sector Primario</div>
+        <div class="ec-title">Agricultura de precisión y nuevas aplicaciones colaborativas</div>
+        <div class="ec-excerpt">Automatizando tareas delicadas: recolección con visión artificial 3D y garras blandas que no dañan el producto biológico.</div>
+        <div class="ec-meta"><span class="ec-date">29/05/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+    </div>
+
+    <div class="block-label">Bloque 4 — Reflexión y Aplicación (Casos Reales)</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e8')">
+        <div class="ec-num">Entrada 08</div>
+        <div class="ec-tag">Caso Real: Mercedes-Benz</div>
+        <div class="ec-title">Cobots en la industria automotriz: ergonomía y calidad de fabricación</div>
+        <div class="ec-excerpt">El caso de Mercedes-Benz integrando UR10e para aplicaciones de sellado, eliminando riesgos ergonómicos sin añadir vallados.</div>
+        <div class="ec-meta"><span class="ec-date">30/05/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e9')">
+        <div class="ec-num">Entrada 09</div>
+        <div class="ec-tag">Carl Zeiss / MANN+HUMMEL</div>
+        <div class="ec-title">Cobots en la fabricación flexible y el control de calidad</div>
+        <div class="ec-excerpt">Aumento radical en la utilización de máquinas (OEE) y optimización de procesos logísticos mediante cobots en entornos reales.</div>
+        <div class="ec-meta"><span class="ec-date">31/05/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+      <div class="entry-card" onclick="showEntry('e10')">
+        <div class="ec-num">Entrada 10</div>
+        <div class="ec-tag">Hospital Reina Sofía</div>
+        <div class="ec-title">Los cobots más allá de la fábrica: aplicaciones emergentes</div>
+        <div class="ec-excerpt">Análisis del sistema robótico Da Vinci en la sanidad pública cordobesa y la expansión del paradigma colaborativo.</div>
+        <div class="ec-meta"><span class="ec-date">01/06/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+    </div>
+
+    <div class="block-label">Bloque 5 — Entrada de Cierre</div>
+    <div class="entry-cards">
+      <div class="entry-card" onclick="showEntry('e11')">
+        <div class="ec-num">Entrada 11</div>
+        <div class="ec-tag">Conclusiones</div>
+        <div class="ec-title">Conclusiones y aprendizajes obtenidos</div>
+        <div class="ec-excerpt">Reflexión final sobre nuestros descubrimientos técnicos, el valor de la divulgación y nuestra visión de la Industria 5.0.</div>
+        <div class="ec-meta"><span class="ec-date">03/06/2026</span><span class="ec-read">Leer artículo →</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div><strong style="color:var(--text)">CoBot<span style="color:var(--accent)">Lab</span></strong> — Divulgación sobre Robótica Colaborativa e Industria 5.0<br><span style="color:var(--text-muted)">Desarrollado por José Antonio López Vinós, Rafael Gallo Arjonilla, Miguel García Gómez</span></div>
+    <div style="text-align:right;color:var(--text-muted)">Basado en investigaciones académicas, normativa ISO 15066 y casos reales.<br>2026 · Proyecto universitario</div>
+  </footer>
+</div><!-- /view-home -->
+
+<!-- ===================== VIEW: SINGLE ENTRY ===================== -->
+<div id="view-entry" class="view">
+  <div id="entry-content"></div>
+</div>
+
+</main>
+
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Volver arriba">↑</button>
+
+<!-- ===================== ENTRY TEMPLATES ===================== -->
+
+<template id="tpl-e1">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 1 · Presentación</div>
+        <h2 class="entry-title">Presentación del grupo y del proyecto</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>20 de mayo de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio, Rafael &amp; Miguel</strong></span>
+    </div>
+    
+    <div class="personal-note"><p>Bienvenidos. Este espacio es el resultado del trabajo de investigación y síntesis que hemos realizado durante las últimas semanas, transformado en un formato de divulgación accesible.</p></div>
+
+    <h3>¿Quiénes somos?</h3>
+    <p>Somos José Antonio López Vinós, Rafael Gallo Arjonilla y Miguel García Gómez, estudiantes de Ingeniería. Hemos unido nuestros perfiles especializados en sistemas automatizados, robótica y control industrial para construir un proyecto que va más allá del papel.</p>
+    
+    <h3>La temática elegida: Robótica Colaborativa e Industria 5.0</h3>
+    <p>La automatización tradicional ha cumplido un ciclo vital indudable en la evolución industrial. Sin embargo, su rigidez, basada en mantener separadas a las máquinas de los seres humanos mediante vallados de seguridad física, presenta limitaciones en los entornos de producción flexible que el mundo exige hoy.</p>
+    <p>Hemos elegido centrar nuestra investigación en la <span class="highlight">robótica colaborativa (cobots)</span> porque representa el eje vertebral de lo que se conoce como <strong>Industria 5.0 (Human-Centric)</strong>. Una evolución que no busca desplazar al humano, sino situarlo en el centro del sistema productivo, apoyándose en máquinas seguras e inteligentes para mejorar la ergonomía y la flexibilidad.</p>
+    
+    <h3>¿Por qué esta tecnología?</h3>
+    <p>La elección no es casual. Como futuros ingenieros, observamos que las fábricas y hospitales del futuro requerirán profesionales capaces de integrar sistemas que compartan espacio de forma fluida con las personas. Estudiar los cobots es estudiar cómo lograr la simbiosis técnica: la máquina aporta precisión, repetibilidad y fuerza física; el humano aporta creatividad, criterio y adaptabilidad.</p>
+    
+    <h3>Objetivos de este blog</h3>
+    <p>La transformación del informe académico en este blog tiene un propósito claro:</p>
+    <ul class="obj-list">
+      <li><strong>Divulgación técnica rigurosa:</strong> Explicar conceptos de seguridad (ISO 15066) y hardware sin perder precisión académica.</li>
+      <li><strong>Accesibilidad:</strong> Traducir la complejidad de los sensores de par, el control dinámico o la robótica blanda a un lenguaje comprensible.</li>
+      <li><strong>Conexión con el mundo real:</strong> Analizar la viabilidad y rentabilidad a través de casos de uso reales en empresas y sanidad pública.</li>
+      <li><strong>Reflexión crítica:</strong> Desmitificar el miedo al reemplazo laboral y evidenciar la mejora en la calidad de vida y salud del operario.</li>
+    </ul>
+
+    <!-- INTERACTION SECTION -->
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e1')">❤️ Me resulta útil <span id="like-count-e1">0</span></button>
+       <div class="comments-list" id="comments-list-e1"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e1')">
+          <input type="text" id="comment-author-e1" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e1" placeholder="Escribe un comentario o pregunta..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="https://press.siemens.com/global/en/feature/industry-50-human-robot-collaboration" target="_blank">Siemens AG (2023). Industrial Trends: Industry 5.0 and Human-Robot Collaboration. Múnich.</a></li>
+            <li>Documentación interna del proyecto (Investigación base sobre transición a Industria 5.0).</li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e2">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 2 · Entradas Técnicas</div>
+        <h2 class="entry-title">Seguridad en robots colaborativos e ISO/TS 15066</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>22 de mayo de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio López Vinós</strong></span>
+    </div>
+    
+    <p>Garantizar que un robot industrial convencional sea seguro implicaba aislarlo físicamente. En la robótica colaborativa, la seguridad es intrínseca y dinámica. Esto requiere un marco normativo completamente nuevo. Aquí explicamos la especificación técnica internacional <span class="highlight">ISO/TS 15066</span>, el pilar sobre el que se construye esta tecnología.</p>
+
+    <h3>Diferencia entre ISO 10218 e ISO/TS 15066</h3>
+    <div class="compare">
+      <div class="compare-col robot">
+        <h4>🔒 ISO 10218</h4>
+        <div class="compare-item"><span class="ci">📌</span><span>Norma general de seguridad para sistemas industriales clásicos.</span></div>
+        <div class="compare-item"><span class="ci">📌</span><span>Se basa en la mitigación del riesgo mediante separación física.</span></div>
+      </div>
+      <div class="compare-col cobot">
+        <h4>✅ ISO/TS 15066</h4>
+        <div class="compare-item"><span class="ci">⚡</span><span>Complementa a la anterior proporcionando criterios concretos para entornos compartidos.</span></div>
+        <div class="compare-item"><span class="ci">⚡</span><span>Define límites de fuerza y presión tolerables en el contacto humano-máquina.</span></div>
+      </div>
+    </div>
+
+    <h3>Límites biomecánicos: El concepto clave</h3>
+    <p>La ISO/TS 15066 marca un antes y un después al plantear que <strong>el contacto físico fortuito es aceptable siempre que la energía no supere umbrales predefinidos</strong> de dolor. La norma delimita 29 áreas anatómicas del cuerpo humano, reconociendo que no todas toleran las mismas presiones.</p>
+    
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Zona del Cuerpo</th><th>Límite de Presión (N/cm²)</th><th>Límite de Fuerza (N)</th></tr></thead>
+        <tbody>
+          <tr><td><div class="bio-zone"><div class="bio-dot" style="background:#ef4444"></div>Cráneo / Cara</div></td><td style="color:#ef4444">130</td><td style="color:#ef4444">130</td></tr>
+          <tr><td><div class="bio-zone"><div class="bio-dot" style="background:#f59e0b"></div>Pecho / Abdomen</div></td><td style="color:#f59e0b">210</td><td style="color:#f59e0b">160</td></tr>
+          <tr><td><div class="bio-zone"><div class="bio-dot" style="background:#3b82f6"></div>Espalda</div></td><td style="color:#3b82f6">210</td><td style="color:#3b82f6">210</td></tr>
+          <tr><td><div class="bio-zone"><div class="bio-dot" style="background:#10b981"></div>Antebrazo / Mano</div></td><td style="color:#10b981">180</td><td style="color:#10b981">140</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Los cuatro modos de operación colaborativa</h3>
+    <p>El estándar especifica cuatro formas válidas de convivencia humana y robótica:</p>
+    <div class="cards">
+      <div class="card"><div class="card-title">1. Parada monitorizada</div><div class="card-desc">El robot trabaja de forma autónoma pero detiene todo movimiento en cuanto el humano accede al área compartida, reanudando al salir.</div></div>
+      <div class="card"><div class="card-title">2. Guiado manual</div><div class="card-desc">El operario controla directamente el movimiento sujetando y desplazando físicamente el brazo del cobot.</div></div>
+      <div class="card"><div class="card-title">3. Velocidad y separación</div><div class="card-desc">Sensores de visión y láser calculan en tiempo real la distancia con la persona y reducen paulatinamente la velocidad del cobot de forma proporcional.</div></div>
+      <div class="card"><div class="card-title">4. Limitación de fuerza y potencia</div><div class="card-desc">El diseño mecánico (baja inercia, peso) y sensórico garantizan que cualquier impacto directo siempre se mantenga bajo los umbrales de seguridad establecidos.</div></div>
+    </div>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e2')">❤️ Me resulta útil <span id="like-count-e2">0</span></button>
+       <div class="comments-list" id="comments-list-e2"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e2')">
+          <input type="text" id="comment-author-e2" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e2" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="#" target="_blank">ISO (2016). ISO/TS 15066: Robots and robotic devices — Collaborative robots.</a></li>
+            <li><a href="#" target="_blank">ISO (2025). ISO 10218-1/2: Safety requirements for industrial robots.</a></li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e3">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 2 · Entradas Técnicas</div>
+        <h2 class="entry-title">Programación por demostración y sistemas de control</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>24 de mayo de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>Rafael Gallo Arjonilla</strong></span>
+    </div>
+    
+    <p>Una barrera crítica de la automatización rígida era la dependencia de ingenieros especializados para cualquier reprogramación. La robótica colaborativa soluciona esto democratizando el control a través de interfaces HMI (Human-Machine Interface) más intuitivas y métodos centrados en el operario.</p>
+
+    <h3>Programación por demostración (Lead-through)</h3>
+    <p>El método más extendido en la programación moderna de cobots es el <span class="highlight">lead-through</span> o guiado manual. En lugar de escribir código, el operario interactúa físicamente con la máquina:</p>
+    <ul>
+      <li>Libera las articulaciones del cobot a través del panel de control.</li>
+      <li>Mueve físicamente el brazo hasta las coordenadas y orientaciones exactas requeridas.</li>
+      <li>Guarda los puntos espaciales.</li>
+      <li>El software interno genera automáticamente la trayectoria suavizada e interpola los movimientos.</li>
+    </ul>
+    
+    <div class="callout purple">
+      <div class="callout-label">Control dinámico integrado</div>
+      <p>Mover un brazo metálico con una sola mano es posible gracias a algoritmos de compensación de gravedad en tiempo real. Los sensores de par en las articulaciones leen la fuerza intencionada del usuario y el software neutraliza el propio peso de la máquina.</p>
+    </div>
+
+    <h3>Gemelos Digitales (Digital Twins)</h3>
+    <p>El desarrollo no se detiene en la planta física. Previo al despliegue físico, se utilizan plataformas de simulación 3D o <strong>Gemelos Digitales</strong>. Esto permite reproducir virtualmente las trayectorias de la máquina y sus interacciones con los obstáculos, garantizando la optimización de tiempos de ciclo y la prevención de singularidades matemáticas sin comprometer la producción real.</p>
+    
+    <h3>Interfaces Avanzadas y MoMa</h3>
+    <p>La tendencia actual (Industria 5.0) apunta a interfaces de Realidad Extendida (XR) y <em>robotic puppeteering</em>, donde HMDs (como HoloLens) superponen alertas o intenciones de movimiento sobre el robot real.</p>
+    <p>Asimismo, los sistemas de control se están fusionando con bases móviles (AGV/AMR), dando lugar a la <strong>Manipulación Móvil (MoMa)</strong>, otorgando flexibilidad total al cobot para trasladarse entre diferentes estaciones de trabajo a demanda.</p>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e3')">❤️ Me resulta útil <span id="like-count-e3">0</span></button>
+       <div class="comments-list" id="comments-list-e3"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e3')">
+          <input type="text" id="comment-author-e3" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e3" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="#" target="_blank">ResearchGate (2024). A Statistical Analysis of Articulated Industrial Robots and Cobots.</a></li>
+            <li>Documentación sobre métodos HMI e Industria 5.0.</li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e4">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 2 · Entradas Técnicas</div>
+        <h2 class="entry-title">Herramientas de extremo (EOAT) y robótica blanda</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>25 de mayo de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>Miguel García Gómez</strong></span>
+    </div>
+    
+    <p>El brazo del robot proporciona posicionamiento y fuerza, pero es el <strong>End-of-Arm Tooling (EOAT)</strong> —la herramienta de extremo— quien realmente interactúa con el mundo físico y define el propósito de la célula productiva.</p>
+
+    <h3>La importancia del Gripper Adaptativo</h3>
+    <p>En el modelo clásico, cada tarea (sujetar un motor, levantar una caja) requería un mecanizado específico. En la robótica colaborativa se priorizan las herramientas modulares y adaptativas.</p>
+    
+    <div class="cards">
+      <div class="card"><div class="card-title">Mecánicos avanzados</div><div class="card-desc">Garras de varios dedos con retroalimentación de par que permiten sujetar objetos de distinto tamaño calculando la fuerza de agarre idónea.</div></div>
+      <div class="card"><div class="card-title">Sistemas neumáticos por vacío</div><div class="card-desc">Altamente seguros para operarios ya que carecen de bordes cortantes y son ideales para cajas y electrónica de consumo.</div></div>
+    </div>
+
+    <h3>Robótica Blanda (Soft Robotics)</h3>
+    <p>Uno de los avances técnicos más fascinantes evaluados en nuestro trabajo es la irrupción de la robótica blanda. Emplea polímeros, siliconas o elastómeros neumáticos. Su característica principal es que la pinza no impone una fuerza de cizallamiento rígida sobre el objeto, sino que <strong>envuelve su superficie distribuyendo la presión equitativamente</strong>.</p>
+    
+    <div class="callout success">
+      <div class="callout-label">Seguridad y versatilidad extremas</div>
+      <p>La adopción de "soft robotics" es fundamental para manipular elementos biológicos o alimentarios. Pero, además, un robot equipado con material viscoelástico disminuye drásticamente cualquier riesgo de lesión si golpeara a un operario, convirtiéndolo en la elección por excelencia de la Industria 5.0.</p>
+    </div>
+
+    <p>La modularidad de la EOAT permite que, mediante acoples rápidos, un mismo cobot en un pequeño taller ensamble una pieza por la mañana y realice un paletizado de cajas por la tarde.</p>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e4')">❤️ Me resulta útil <span id="like-count-e4">0</span></button>
+       <div class="comments-list" id="comments-list-e4"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e4')">
+          <input type="text" id="comment-author-e4" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e4" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="#" target="_blank">IDTechEx (2024). Collaborative Robots 2025–2045: Technologies and Markets.</a></li>
+            <li><a href="#" target="_blank">IBM Think (2023). The role of AI and Robotics in Smart Manufacturing.</a></li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e5">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 3 · Divulgativas</div>
+        <h2 class="entry-title">¿Qué diferencia a un cobot de un robot industrial tradicional?</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>27 de mayo de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio, Rafael &amp; Miguel</strong></span>
+    </div>
+    
+    <div class="personal-note"><p>A menudo escuchamos que un cobot no es más que "un robot pequeño". Vamos a explicar por qué esto es fundamentalmente falso, huyendo de la jerga técnica profunda y centrándonos en su filosofía.</p></div>
+
+    <h3>La analogía del tren y el compañero de trabajo</h3>
+    <p>Piensa en un robot industrial convencional como en un <strong>tren de alta velocidad</strong>: está diseñado para moverse a una velocidad vertiginosa y transportar cargas enormes con una precisión que deslumbra. Pero tiene una condición irrenunciable: sus vías deben estar aisladas. Si tú pisas su vía, la única manera de evitar el accidente es detener la máquina violentamente. No detecta tu intención, es totalmente ajeno a ti.</p>
+    
+    <p>Por otro lado, un cobot es tu <strong>compañero de trabajo de carne y hueso</strong>. Mientras movéis un mueble pesado juntos, tu compañero "siente" cuándo tú te frenas, reajusta su posición y evita chocar contigo. Los cobots funcionan de igual manera, pero sus "sentidos" son sensores de par y fuerza incrustados en cada articulación metálica.</p>
+    
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Característica</th><th>🔴 Robot Industrial</th><th>🟢 Robot Colaborativo</th></tr></thead>
+        <tbody>
+          <tr><td><strong>El Entorno</strong></td><td class="td-warn">Jaula cerrada obligatoria</td><td class="td-good">Espacio compartido fluido</td></tr>
+          <tr><td><strong>El Objetivo</strong></td><td class="td-warn">Sustituir toda intervención humana</td><td class="td-good">Asistir en las tareas tediosas</td></tr>
+          <tr><td><strong>Programación</strong></td><td class="td-warn">Código duro por ingenieros</td><td class="td-good">Enseñanza visual por el propio usuario</td></tr>
+          <tr><td><strong>Flexibilidad</strong></td><td class="td-warn">Instalación fija de larga vida</td><td class="td-good">Reasignable cada semana a otra línea</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>La robótica colaborativa no busca ganar una carrera de velocidad al humano. Busca ofrecer fuerza, resistencia inagotable para levantar cargas (reduciendo dolores de espalda a los trabajadores) y consistencia en los resultados, todo ello dentro del paradigma amable y humano-céntrico de la Industria 5.0.</p>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e5')">❤️ Me resulta útil <span id="like-count-e5">0</span></button>
+       <div class="comments-list" id="comments-list-e5"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e5')">
+          <input type="text" id="comment-author-e5" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e5" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="#" target="_blank">International Federation of Robotics (2025). Case Studies on Collaborative Robots.</a></li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e6">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 3 · Divulgativas</div>
+        <h2 class="entry-title">Cobots en medicina y rehabilitación</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>28 de mayo de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>Rafael Gallo Arjonilla</strong></span>
+    </div>
+    
+    <p>El diseño intrínsecamente inofensivo de los cobots ha hecho que dejen las fábricas y lleguen al sector donde el cuidado de la persona es crítico: la medicina. Aquí el concepto de "robótica asistencial" brilla de una forma especial.</p>
+
+    <h3>Rehabilitación Motora Exacta</h3>
+    <p>En el tratamiento de pacientes con daños neuronales o musculares que deben recuperar la movilidad de extremidades, la terapia exige movimientos altamente repetitivos. Un fisioterapeuta humano, tras muchas sesiones, sufre fatiga y variaciones imperceptibles en los ángulos de la terapia.</p>
+    <p>Un sistema cobot puede "aprender" de las manos del terapeuta el movimiento ideal para un paciente concreto y después, <strong>reproducir ese mismo movimiento cíclico docenas de veces</strong>, con la resistencia exacta calculada según el progreso diario, aliviando la carga física del sanitario.</p>
+
+    <h3>Estabilidad quirúrgica inagotable</h3>
+    <p>Otro ámbito destacado es la manipulación de herramientas, ecógrafos o cámaras dentro del quirófano. Un brazo robótico colaborativo puede mantener una cámara endoscópica perfectamente inerte durante una operación de varias horas, liberando manos expertas para la intervención quirúrgica real. Si es necesario moverlo, un leve toque guiado permite resituarlo.</p>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e6')">❤️ Me resulta útil <span id="like-count-e6">0</span></button>
+       <div class="comments-list" id="comments-list-e6"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e6')">
+          <input type="text" id="comment-author-e6" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e6" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="#" target="_blank">Universal Robots (2024). Guía de seguridad en robots colaborativos.</a></li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e7">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 3 · Divulgativas</div>
+        <h2 class="entry-title">Agricultura de precisión y nuevas aplicaciones colaborativas</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>29 de mayo de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>Miguel García Gómez</strong></span>
+    </div>
+    
+    <p>Cosechar fruta en el campo requiere tres cosas que a un robot industrial clásico se le escapan: identificar madurez, ubicar objetos que cambian de tamaño en cada árbol, y tener el "tacto" suficiente para no magullar la fruta.</p>
+
+    <h3>Visión artificial + Garras Blandas</h3>
+    <p>Gracias a la integración de sistemas de visión básica (cámaras 3D) en cobots, y sumando el avance del que hablábamos hace unas semanas de las herramientas <em>Soft Robotics</em> (robótica blanda), el campo ha abrazado la automatización de precisión.</p>
+    <p>El proceso es fascinante: una plataforma móvil (que combina robótica y AGV) se detiene frente a un manzano. Las cámaras escanean y detectan los frutos con coloración óptima. El brazo del cobot esquiva suavemente las ramas gracias a su destreza de 6 grados de libertad. Finalmente, sus pinzas neumáticas de silicona atrapan el fruto depositándolo con absoluta delicadeza, sin presionar más de lo necesario.</p>
+
+    <div class="callout warning">
+      <div class="callout-label">Flexibilidad biológica</div>
+      <p>Puesto que la agricultura cambia según la temporada, la gran ventaja del cobot recae en su reprogramación ágil. En un mes puede estar empaquetando cestas de arándanos en la planta de procesado y al mes siguiente podando de forma selectiva viñedos con una herramienta tijera.</p>
+    </div>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e7')">❤️ Me resulta útil <span id="like-count-e7">0</span></button>
+       <div class="comments-list" id="comments-list-e7"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e7')">
+          <input type="text" id="comment-author-e7" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e7" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="#" target="_blank">MarketsandMarkets (2024). Collaborative Robot Market Forecast 2024–2030.</a></li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e8">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 4 · Casos Reales</div>
+        <h2 class="entry-title">Cobots en la industria automotriz: ergonomía y calidad de fabricación</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>30 de mayo de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio López Vinós</strong></span>
+    </div>
+    
+    <p>Para ilustrar el impacto directo de esta tecnología, analizamos en nuestro trabajo académico el caso de la planta de ensamblaje de Mercedes-Benz en Juiz de Fora (Brasil).</p>
+
+    <div class="case-study">
+      <div class="case-header">
+        <div class="case-logo">🚘</div>
+        <div>
+          <div class="case-company">Mercedes-Benz — Juiz de Fora</div>
+          <div class="case-subtitle">Aplicación de sellantes y adhesivos · Brazo cobot: UR10e</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <h4>El problema de la ergonomía</h4>
+        <p>El proceso requería la aplicación de un cordón estructural de sellante adhesivo en partes del vehículo. Esta era una labor repetitiva que exigía sostener una pistola pesada ejerciendo fuerza constante. Esto derivaba en dos inconvenientes críticos: <span class="highlight3">alto índice de fatiga y trastornos musculoesqueléticos en la plantilla</span>, sumado a una aplicación desigual por agotamiento humano al final del turno.</p>
+        
+        <h4>La solución colaborativa</h4>
+        <p>Se integró un modelo colaborativo (UR10e) que sostenía y aplicaba el sellante sin quebrar las dinámicas de la fábrica. Al no precisar de vallados de seguridad perimetrales masivos, el espacio en planta no se alteró severamente. El trabajador pasó a adoptar un papel de <strong>supervisor de calidad</strong>.</p>
+        
+        <div class="case-metrics">
+          <div class="metric"><span class="metric-val">Cero</span><span class="metric-label">Trastornos reportados</span></div>
+          <div class="metric"><span class="metric-val">Uniformidad</span><span class="metric-label">En aplicación de adhesivo</span></div>
+        </div>
+      </div>
+    </div>
+
+    <p>El éxito radica en que el cobot asume el trabajo Dull (aburrido) y Demanding (exigente), validando los principios de bienestar en el centro del trabajo de la Industria 5.0.</p>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e8')">❤️ Me resulta útil <span id="like-count-e8">0</span></button>
+       <div class="comments-list" id="comments-list-e8"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e8')">
+          <input type="text" id="comment-author-e8" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e8" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="https://www.universal-robots.com/case-stories/mercedes-benz/" target="_blank">Caso Oficial Universal Robots: Mercedes-Benz, Juiz de Fora, Brazil</a></li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e9">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 4 · Casos Reales</div>
+        <h2 class="entry-title">Cobots en la fabricación flexible y el control de calidad</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>31 de mayo de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>Rafael Gallo Arjonilla</strong></span>
+    </div>
+    
+    <p>La adopción de cobots no se ciñe exclusivamente al ensamblaje; resultan indispensables en procesos logísticos intermedios y de control metrológico de alta precisión (inspección de calidad).</p>
+
+    <h3>Metrología y Productividad: El caso de Carl Zeiss India</h3>
+    <p>Carl Zeiss tenía un cuello de botella grave: un operario solo podía atender una máquina de inspección a la vez, causando tiempos muertos (el uso no superaba el 50%). La integración de un cobot ligero UR5 cambió la topología del centro.</p>
+    <p><strong>El resultado:</strong> El cobot centralizado se encarga de ubicar las piezas con su lector óptico de códigos de barras, y alimenta el ciclo de TRES máquinas a la vez. El incremento de utilización productiva (OEE) superó el 90%.</p>
+
+    <h3>Lean Manufacturing en España: MANN+HUMMEL</h3>
+    <p>En la planta de Zaragoza dedicada a componentes filtrantes de automoción de MANN+HUMMEL, la meta era no corromper la filosofía "Lean" de la empresa (procesos fluidos y con mínimo desperdicio). Vallar robots tradicionales era impensable por cuestiones de espacio.</p>
+    <p>La integración de brazos robóticos UR10 permitió automatizar la transferencia de piezas voluminosas entre estaciones. Al no llevar celdas perimetrales opacas, los técnicos y supervisores visualizan todo el flujo productivo natural, mejorando la transferencia sin dañar la integridad ergonómica de la plantilla.</p>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e9')">❤️ Me resulta útil <span id="like-count-e9">0</span></button>
+       <div class="comments-list" id="comments-list-e9"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e9')">
+          <input type="text" id="comment-author-e9" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e9" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="https://cobots.ie/carl-zeiss-case-study-collaborative-robots-increase-productivity-by-90" target="_blank">Cobots.ie: Carl Zeiss Case Study - Collaborative Robots increase productivity by 90%</a></li>
+            <li><a href="https://www.universal-robots.com/case-stories/mannplushummel-iberica" target="_blank">Caso Oficial Universal Robots: MANN+HUMMEL Ibérica, Zaragoza</a></li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e10">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 4 · Casos Reales</div>
+        <h2 class="entry-title">Los cobots más allá de la fábrica: aplicaciones emergentes</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>1 de junio de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>Miguel García Gómez</strong></span>
+    </div>
+    
+    <p>El modelo industrial se ha exportado. Lo que nació en la planta de ensamblaje (supervisión humana, asistencia robotizada milimétrica y seguridad compartida) ha cristalizado en el mayor exponente de la interacción robótica médica moderna.</p>
+
+    <div class="case-study" style="margin-top:2rem">
+      <div class="case-header">
+        <div class="case-logo">🏥</div>
+        <div>
+          <div class="case-company">Hospital Universitario Reina Sofía (Córdoba)</div>
+          <div class="case-subtitle">Cirugía de Alta Precisión Asistida · Sistema Da Vinci</div>
+        </div>
+      </div>
+      <div class="case-body">
+        <h4>El exponente extremo de la colaboración: Cirugía Robótica</h4>
+        <p>El sistema quirúrgico Da Vinci implementado en el Hospital Universitario Reina Sofía de Córdoba representa de manera brillante los pilares de la colaboración humano-máquina. A diferencia de un proceso donde la IA opera por su cuenta, el Da Vinci es pura telemanipulación y asistencia colaborativa.</p>
+        
+        <h4>¿Cómo funciona la simbiosis?</h4>
+        <p>El cirujano experimentado se sitúa en una consola ergonómica, aliviando la fatiga de largas operaciones en quirófano. La máquina digitaliza los movimientos precisos de sus manos, <strong>filtra el temblor biológico natural</strong> de cualquier pulso, y los traslada milimétricamente a unos efectores robóticos diminutos dentro del paciente.</p>
+        <p>Este grado de precisión permite intervenciones mínimamente invasivas en especialidades como urología o cirugía oncológica de colon.</p>
+        
+        <div class="case-metrics">
+          <div class="metric"><span class="metric-val">Extrema</span><span class="metric-label">Reducción de dolor y recuperación</span></div>
+          <div class="metric"><span class="metric-val">100%</span><span class="metric-label">Control humano constante</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Nuestra reflexión sobre la expansión colaborativa</h3>
+    <p>Analizar la adopción del sistema Da Vinci en el Hospital Reina Sofía, donde ya se realizan cientos de cirugías avanzadas y se amplía con múltiples consolas, nos confirma la tesis troncal de nuestro estudio académico: la automatización futura no desbanca a los profesionales; requiere de sus destrezas humanas inimitables, ofreciéndoles a cambio herramientas formidables que minimizan el error mecánico.</p>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e10')">❤️ Me resulta útil <span id="like-count-e10">0</span></button>
+       <div class="comments-list" id="comments-list-e10"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e10')">
+          <input type="text" id="comment-author-e10" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e10" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="https://www.eldiadecordoba.es/cordoba/Reina-Sofia-incorpora-Da-Vinci-cordoba_0_1284172204.html" target="_blank">El Día de Córdoba: El Reina Sofía incorpora un nuevo robot Da Vinci.</a></li>
+            <li><a href="https://www.europapress.es/esandalucia/cordoba/noticia-hospital-reina-sofia-cordoba-impulsa-cirugia-robotica-sumando-segundo-sistema-da-vinci-20210628154915.html" target="_blank">Europa Press: El Hospital Reina Sofía de Córdoba impulsa la cirugía robótica sumando su segundo sistema Da Vinci.</a></li>
+            <li><a href="https://www.eldiadecordoba.es/cordoba/hospital-reina-sofia-cirugias-roboticas_0_2001562843.html" target="_blank">El Día de Córdoba: El Hospital Reina Sofía dispara sus cirugías robóticas.</a></li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+
+<template id="tpl-e11">
+<article class="entry">
+  <div class="entry-body">
+    <button class="back-btn" onclick="showHome()">← Volver al inicio</button>
+    <div class="entry-header">
+      <div class="entry-title-group">
+        <div class="entry-tag">Bloque 5 · Cierre y Evaluación</div>
+        <h2 class="entry-title">Conclusiones y aprendizajes obtenidos</h2>
+      </div>
+    </div>
+    <div class="entry-byline">
+      <span class="byline-item">📅 <strong>3 de junio de 2026</strong></span>
+      <span class="byline-item">✍️ <strong>José Antonio, Rafael &amp; Miguel</strong></span>
+    </div>
+    
+    <div class="personal-note"><p>Este proyecto universitario llega a su fin. Hemos recorrido desde la dureza normativa y técnica que rige los equipos, hasta los impactos socioeconómicos y los ecosistemas emergentes. Es momento del balance del grupo.</p></div>
+
+    <h3>Aprendizajes Técnicos</h3>
+    <p>Hemos comprendido que un sistema colaborativo es mucho más que el brazo robótico (cobot). Representa un amalgama tecnológico: el hardware sensorizado capaz de registrar variaciones sutiles de par/fuerza (cumpliendo con la estricta <strong>ISO/TS 15066</strong>), los <em>Digital Twins</em> que previenen y simulan fallos antes de implementaciones físicas, y sobre todo, cómo las barreras de usabilidad se disuelven mediante la programación "lead-through". Todo este andamiaje tecnológico logra desplomar el <strong>retorno de inversión (ROI) a un rango entre 6 y 18 meses</strong>, democratizando el acceso a las pequeñas y medianas empresas (PYMES).</p>
+    
+    <h3>Reflexión sobre la Divulgación</h3>
+    <p>El reto principal no ha sido la lectura académica. Ha sido la traducción y destilación del documento analítico (nuestra fuente origen en PDF) en un formato narrativo apto para internet y el público general. Diseñar un entorno UI/UX limpio para que conceptos sobre "Límites Biomecánicos" resulten comprensibles es esencial en la ingeniería de nuestro siglo: si la tecnología no se sabe transmitir, difícilmente será adoptada socialmente.</p>
+
+    <h3>La Industria 5.0 (Human-Centric)</h3>
+    <p>Como ingenieros, finalizamos asumiendo una certeza vital. La era 4.0 empujaba a digitalizar y optimizar masivamente a expensas, en ocasiones, del propio operario humano.</p>
+    <p>Nuestra visión, corroborada tras investigar aplicaciones desde MANN+HUMMEL o Carl Zeiss, hasta hospitales quirúrgicos, es un rotundo sí a la <strong>Industria 5.0</strong>. Este paradigma no sustituye empleados; los releva de dolores crónicos musculoesqueléticos, traslada la fuerza bruta al polímero y al metal, y rescata lo irreemplazable: nuestra capacidad para juzgar, mejorar, innovar y sentir el entorno.</p>
+
+    <div class="callout success">
+      <div class="callout-label">Mensaje Final</div>
+      <p>Aspiramos a que este blog sirva de demostración palpable: el futuro del trabajo tecnológico no desplaza al humano, sino que se alinea alrededor de sus necesidades y sus capacidades inherentes. Gracias por leernos.</p>
+    </div>
+
+    <div class="interaction-section">
+       <h3>Comentarios y Valoraciones</h3>
+       <button class="btn-like" onclick="likeEntry('e11')">❤️ Me resulta útil <span id="like-count-e11">0</span></button>
+       <div class="comments-list" id="comments-list-e11"></div>
+       <form class="comment-form" onsubmit="addComment(event, 'e11')">
+          <input type="text" id="comment-author-e11" placeholder="Tu nombre" required>
+          <textarea id="comment-text-e11" placeholder="Escribe un comentario..." required></textarea>
+          <button type="submit">Publicar comentario</button>
+       </form>
+       
+       <div class="references-section">
+          <h4>Fuentes Consultadas</h4>
+          <ul>
+            <li><a href="#" target="_blank">OBS Business School (2025). Informe sobre Smart Cities e Inteligencia Urbana.</a></li>
+            <li><a href="#" target="_blank">IBM Think (2023). The role of AI and Robotics in Smart Manufacturing.</a></li>
+          </ul>
+       </div>
+    </div>
+  </div>
+</article>
+</template>
+
+<script>
+  // --- UI Layout and Scroll Management ---
+  const progressBar = document.getElementById('progress-bar');
+  const backTop = document.getElementById('back-top');
+
+  window.addEventListener('scroll', () => {
+    const docH = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    progressBar.style.width = docH > 0 ? (window.scrollY / docH * 100) + '%' : '0%';
+    if (window.scrollY > 400) backTop.classList.add('show');
+    else backTop.classList.remove('show');
+    updateActiveNav();
+  });
+
+  function updateActiveNav() {
+    const items = document.querySelectorAll('.nav-item');
+    const vh = document.getElementById('view-home');
+    if (vh.classList.contains('active')) {
+      items[0].classList.add('active');
+      for (let i=1;i<items.length;i++) items[i].classList.remove('active');
+    }
+  }
+
+  function showHome() {
+    document.getElementById('view-home').classList.add('active');
+    document.getElementById('view-entry').classList.remove('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+    updateNavForHome();
+    closeMenu();
+  }
+
+  function updateNavForHome(){
+    document.querySelectorAll('.nav-item').forEach((it,i)=>{
+      it.classList.toggle('active', i===0);
+    });
+  }
+
+  function showEntry(id) {
+    const tpl = document.getElementById('tpl-'+id);
+    if (!tpl) return;
+    const content = document.getElementById('entry-content');
+    content.innerHTML = tpl.innerHTML;
+    
+    document.getElementById('view-home').classList.remove('active');
+    document.getElementById('view-entry').classList.add('active');
+    window.scrollTo({top:0,behavior:'instant'});
+    closeMenu();
+    
+    // update nav active state based on entry mapping
+    const nums = {'e1':1,'e2':2,'e3':3,'e4':4,'e5':5,'e6':6,'e7':7,'e8':8,'e9':9,'e10':10,'e11':11};
+    const idx = nums[id];
+    document.querySelectorAll('.nav-item').forEach((it,i)=>{
+      it.classList.toggle('active', i === idx);
+    });
+    
+    // Render interactions specific to this loaded entry template
+    renderInteractions(id);
+  }
+
+  // --- Mobile Sidebar Functionality ---
+  function toggleMenu() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+  }
+  function closeMenu() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
+  document.getElementById('overlay').addEventListener('click', closeMenu);
+
+  // --- Interaction System (LocalStorage) ---
+  function renderInteractions(id) {
+    // 1. Likes rendering
+    let likes = localStorage.getItem('likes_' + id) || 0;
+    const countEl = document.getElementById('like-count-' + id);
+    if(countEl) countEl.innerText = likes;
+
+    // 2. Comments rendering
+    let comments = JSON.parse(localStorage.getItem('comments_' + id) || '[]');
+    let listEl = document.getElementById('comments-list-' + id);
+    if(listEl) {
+        if(comments.length === 0) {
+            listEl.innerHTML = '<div class="comment"><p style="color:var(--text-muted); font-size:0.9rem;">Sé el primero en comentar.</p></div>';
+        } else {
+            listEl.innerHTML = comments.map(c => `
+                <div class="comment">
+                    <div class="comment-header">
+                        <strong>${c.author}</strong>
+                        <span>${c.date}</span>
+                    </div>
+                    <p>${c.text}</p>
+                </div>
+            `).join('');
+        }
+    }
+  }
+
+  function likeEntry(id) {
+    let likes = parseInt(localStorage.getItem('likes_' + id) || 0) + 1;
+    localStorage.setItem('likes_' + id, likes);
+    document.getElementById('like-count-' + id).innerText = likes;
+    
+    const btn = event.currentTarget;
+    btn.style.transform = "scale(1.05)";
+    setTimeout(() => { btn.style.transform = "scale(1)"; }, 200);
+  }
+
+  function addComment(e, id) {
+    e.preventDefault();
+    let authorInput = document.getElementById('comment-author-' + id);
+    let textInput = document.getElementById('comment-text-' + id);
+    
+    let author = authorInput.value.trim();
+    let text = textInput.value.trim();
+    
+    if(!author || !text) return;
+
+    let comments = JSON.parse(localStorage.getItem('comments_' + id) || '[]');
+    let date = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+    
+    comments.push({ author, text, date });
+    localStorage.setItem('comments_' + id, JSON.stringify(comments));
+    
+    authorInput.value = '';
+    textInput.value = '';
+    renderInteractions(id);
+  }
+</script>
+</body>
+</html>
